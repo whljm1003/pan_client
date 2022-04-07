@@ -381,7 +381,7 @@ export const DetailBG = styled.div`
   }
 `;
 
-export const CommentBottom = styled.div`
+export const CommentBottom = styled.form`
   width: 100%;
   height: 5.5%;
   position: relative;

@@ -18,7 +18,7 @@ export function postLogin(email, password) {
   });
 }
 
-export function getToken() {
+export function getUserInfo() {
   return axios
     .get(`${API_URL}/accessToken`, {
       headers: {

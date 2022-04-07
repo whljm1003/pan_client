@@ -1,15 +1,16 @@
 import styled from "styled-components";
 import SearchImg from "../images/loupe.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
 import React, { useState } from "react";
 
 function Header({ keywords, SetKeywords, isMain, onClickSearch }) {
-  const [isLogin, setIsLogin] = useState(true);
   const token = sessionStorage.getItem("CC_Token");
+  const navigate = useNavigate();
   const handlelogout = () => {
     sessionStorage.removeItem("CC_Token");
-    setIsLogin(false);
+    navigate("/");
+    window.location.reload(true);
   };
   const searchKeywords = (e) => {
     SetKeywords(e.target.value);
@@ -43,7 +44,7 @@ function Header({ keywords, SetKeywords, isMain, onClickSearch }) {
           ) : null}
           {token ? (
             <Login>
-              <Link to="/" onClick={handlelogout}>
+              <Link to="*" onClick={handlelogout}>
                 LOGOUT
               </Link>
             </Login>

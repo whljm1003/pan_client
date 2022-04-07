@@ -33,7 +33,8 @@ export default function Login() {
     onSuccess: () => {
       queryClient.invalidateQueries();
       queryClient.invalidateQueries("super-heroes");
-      navigate("/");
+      window.location.href = "http://localhost:3000";
+      // navigate("/");
     },
     onError: (error) => {
       alert("비밀번호가 일치하지 않습니다.");
