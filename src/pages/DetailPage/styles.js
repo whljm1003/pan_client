@@ -202,11 +202,11 @@ export const BottomWriter = styled.div`
 export const BottomLikeBtn = styled.div`
   margin-left: 30px;
   display: flex;
-  justify-content: center;
   align-items: center;
   font-size: 20px;
   cursor: pointer;
   span {
+    margin-top: 2px;
     margin-left: 10px;
   }
 `;

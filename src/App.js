@@ -17,13 +17,7 @@ import UserStore from "store/UserStore";
 import CreateBookStore from "store/CreateBookStore";
 import DiaryInfoStore from "store/DiaryInfoStore";
 //recoil
-import {
-  RecoilRoot,
-  atom,
-  selector,
-  useRecoilState,
-  useRecoilValue,
-} from "recoil";
+import { RecoilRoot } from "recoil";
 
 function App() {
   return (

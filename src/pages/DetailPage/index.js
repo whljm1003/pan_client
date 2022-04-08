@@ -1,6 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
-import { UserContext } from "store/UserStore";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import Header from "components/Header";
 import ToggleButton from "components/ToggleButton";
 import { AiOutlineHeart, AiTwotoneHeart } from "react-icons/ai";
@@ -45,15 +43,19 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { ModalProvider } from "styled-react-modal";
 import AlertModal from "../../components/Modals/AlertModal";
-import { API_URL } from "url";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import {
-  getDiary,
-  deleteDiary,
-  postComments,
-  deleteComments,
+  getDiaryApi,
+  deleteDiaryApi,
+  postCommentsApi,
+  deleteCommentsApi,
+  likeApi,
+  publicApi,
 } from "api/DetailApi";
-import { getUserInfo } from "api/userApi";
+import { getUserInfoApi } from "api/userApi";
+import { useRecoilValue } from "recoil";
+import { DiariesAtom } from "atom";
+
 export default function Details() {
   const { id } = useParams();
   const [comment, setComment] = useState("");
@@ -64,20 +66,22 @@ export default function Details() {
   const [alertMsg, setAlertMsg] = useState("");
   const [btnContents, setBtnContents] = useState("");
   const [toPage, setToPage] = useState("");
+  // recoil
+  const diaries = useRecoilValue(DiariesAtom);
+  console.log(diaries);
   // react-query
   const {
     data: cur,
     isLoading: curLoading,
     refetch: curRefetch,
-  } = useQuery("diary", () => getDiary(id));
-  const {
-    data: userInfo,
-    isLoading: userLoding,
-    refetch: userRefetch,
-  } = useQuery("userInfo", getUserInfo);
+  } = useQuery("diary", () => getDiaryApi(id));
+  const { data: userInfo, isLoading: userLoding } = useQuery(
+    "userInfo",
+    getUserInfoApi
+  );
   const { mutate: commentsPost } = useMutation(
     "commentsPost",
-    () => postComments(id, comment),
+    () => postCommentsApi(id, comment),
     {
       onSuccess: () => {
         queryClient.invalidateQueries("diary");
@@ -86,14 +90,35 @@ export default function Details() {
   );
   const { mutate: commentsDelete } = useMutation(
     "commentsDelete",
-    deleteComments,
+    deleteCommentsApi,
     {
       onSuccess: () => {
         queryClient.invalidateQueries("diary");
       },
     }
   );
-  const { mutate: diariesDelete } = useMutation("diariesDelete", deleteDiary);
+  const { mutate: diariesDelete } = useMutation(
+    "diariesDelete",
+    deleteDiaryApi
+  );
+  const { mutate: diariesLike } = useMutation(
+    "diariesLike",
+    () => likeApi(id),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("diary");
+      },
+    }
+  );
+  const { mutate: publicMutate } = useMutation(
+    "publicMutate",
+    () => publicApi(id),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("diary");
+      },
+    }
+  );
   // 모달 핸들러
   const modalHandler = (isModal, alertMsg, btnContents, toPage) => {
     setIsModal(isModal);
@@ -129,60 +154,61 @@ export default function Details() {
     modalHandler(true, "댓글이 삭제 되었습니다", "확인");
   };
   // 좋아요 기능 구현
-  const likeHandler = async () => {
-    await axios({
-      method: "post",
-      url: `${API_URL}/diaries/${id}/trending`,
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
-        ContentType: "application/json",
-      },
-      withCredentials: true,
-    });
-    setTimeout(() => {
-      window.location.reload(true);
-    }, 1000);
+  const likeHandler = () => {
+    diariesLike();
+  };
+  // 좋아요 태그
+  const likeTag = () => {
+    const filter = cur?.Likes.filter((like) => like.userId === userInfo?.id);
+    if (filter?.length >= 1) {
+      return (
+        <BottomLikeBtn>
+          <AiTwotoneHeart size={20} onClick={likeHandler} color="#e84118" />
+          <span>{cur?.Likes.length}</span>
+        </BottomLikeBtn>
+      );
+    } else {
+      return (
+        <BottomLikeBtn>
+          <AiOutlineHeart size={20} onClick={likeHandler} />
+          <span>{cur?.Likes.length}</span>
+        </BottomLikeBtn>
+      );
+    }
+  };
+  // 일기 공개 비공개 소스
+  const handleSubmit = () => {
+    publicMutate();
   };
   // 이전 일기로 이동
   const PreviousDiary = () => {
-    const prvious = parseInt(id) - 1;
-    navigate(`/details/${prvious}`);
+    const nummberId = parseInt(id);
+    if (diaries) {
+      for (let i = 0; i < diaries.length; i++) {
+        if (nummberId === diaries[i].id) {
+          navigate(`/details/${diaries[i - 1].id}`);
+        }
+      }
+    }
   };
   // 다음 일기로 이동
   const afterDiary = () => {
-    const next = parseInt(id) + 1;
-    navigate(`/details/${next}`);
-  };
-
-  // 일기 공개 비공개 소스
-  // 체크박스 클릭후 버튼 클릭하면 공개 비공개 전환 (true, false)
-  const handleSubmit = async () => {
-    await axios({
-      method: "post",
-      url: `${API_URL}/diaries/${id}/private`,
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
-        ContentType: "application/json",
-      },
-      withCredentials: true,
-    }).then(
-      // setTiomeout으로 공개 비공개 전환을 가능하게 해주었다.
-      setTimeout(() => {
-        window.location.reload(true);
-      }, 100)
-    );
+    const nummberId = parseInt(id);
+    if (diaries) {
+      for (let i = 0; i < diaries.length; i++) {
+        if (nummberId === diaries[i].id) {
+          navigate(`/details/${diaries[i + 1].id}`);
+        }
+      }
+    }
   };
   // 이전,다음 버튼 클릭 시 데이터 랜더링
   useEffect(() => {
+    console.log("확인");
+    console.log(cur);
+    console.log(id);
     curRefetch();
-  }, [id]);
-  // test
-  useEffect(() => {
-    // console.log(comment);
-    // console.log(cur);
-    // console.log(id);
-    // console.log(userInfo);
-  }, [cur, userInfo, comment]);
+  }, [id, cur]);
 
   if (userLoding && curLoading) {
     return <div>로딩중!!</div>;
@@ -239,16 +265,13 @@ export default function Details() {
             <ContentBottom>
               <BottomLeft>
                 <BottomWriter>작성자: {cur?.username}</BottomWriter>
-                <BottomLikeBtn>
-                  <AiOutlineHeart size={24} onClick={likeHandler} />
-                  <span>{cur?.like}</span>
-                </BottomLikeBtn>
+
+                {likeTag()}
               </BottomLeft>
               <BottomRight>
                 <BottomPreBtn onClick={PreviousDiary}>이전일기</BottomPreBtn>
                 <BottomNextBtn onClick={afterDiary}>다음일기</BottomNextBtn>
-                {/* id과 userId 비교 */}
-                {/* 없다면 수정,삭제 버튼 안보이게 함 */}
+                {/*수정,삭제 버튼 */}
                 {cur?.userId === userInfo?.id && (
                   <>
                     {cur?.private ? (
@@ -266,7 +289,6 @@ export default function Details() {
             </ContentBottom>
           </DetailContent>
           {/* 댓글부분 */}
-          {/* private true면 비공개 false면 공개 */}
           {cur && cur.private === false ? (
             <DetailComment>
               <DetailBG>
@@ -279,7 +301,7 @@ export default function Details() {
                           {comment.createdAt.slice(0, 10)}
                         </CommentMiddle>
                         <CommentRight>
-                          {cur?.userId === userInfo?.id && (
+                          {comment.userId === userInfo?.id && (
                             <CommentDeleteBtn
                               onClick={() => deleteCommnet(comment.id)}
                             >

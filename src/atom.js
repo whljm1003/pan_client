@@ -4,7 +4,7 @@ export const userState = atom({
   key: "userState", // unique ID (with respect to other atoms/selectors)
   default: "", // default value (aka initial value)
 });
-export const token = atom({
-  key: "tokenState", // unique ID (with respect to other atoms/selectors)
-  default: "", // default value (aka initial value)
+export const DiariesAtom = atom({
+  key: "diaries", // unique ID (with respect to other atoms/selectors)
+  default: [], // default value (aka initial value)
 });

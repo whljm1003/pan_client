@@ -1,14 +1,16 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useSetRecoilState } from "recoil";
+import { DiariesAtom } from "atom";
 
-function PublicNote({ current }) {
-  //  page이동을 위한 변수들!
+function PublicNote({ current, totalDiaries }) {
   const navicate = useNavigate();
-  // Details 페이지로 이동 하는 메소드
-  // onClick하면 해당 일기의 id값을 추출해서 params로 전달하면서 페이지 이동
+  // recoil
+  const setDiaries = useSetRecoilState(DiariesAtom);
   const ToDetails = (id) => {
     navicate(`/details/${id}`);
+    setDiaries(totalDiaries);
   };
   return (
     <ListSection>

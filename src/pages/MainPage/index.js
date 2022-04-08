@@ -4,7 +4,7 @@ import Top10 from "components/Main/Top10";
 import Pagination from "components/Pagination";
 import ToggleButton from "components/ToggleButton";
 import Header from "components/Header";
-import { getDiaries, getGroupDiaries, getSearch } from "api/MainAPi";
+import { getDiariesApi, getGroupDiariesApi, getSearchApi } from "api/MainAPi";
 import { useQuery } from "react-query";
 import {
   MainBody,
@@ -35,24 +35,22 @@ export default function Main() {
   const [currentPageG, setCurrentPageG] = useState(1);
   const [currentPageS, setCurrentPageS] = useState(1);
   const [postsPerPage] = useState(10);
-
   // react-query
   const { data: diaries, isLoading: diariesLoding } = useQuery(
     "diaries",
-    getDiaries
+    getDiariesApi
   );
   const { data: groupDiaries, isLoading: groupDiariesLoding } = useQuery(
     "group-diaries",
-    getGroupDiaries
+    getGroupDiariesApi
   );
   const {
     data: searchDiaries,
     isLoading: searchDiariesLoding,
     refetch,
-  } = useQuery("search", () => getSearch(keywords), {
+  } = useQuery("search", () => getSearchApi(keywords), {
     enabled: false,
   });
-
   // Get current posts
   const indexOfLastPostI = currentPageI * postsPerPage;
   const indexOfLastPostG = currentPageG * postsPerPage;
@@ -89,7 +87,7 @@ export default function Main() {
       const top = diaries?.concat(groupDiaries).filter((e) => e.like !== null);
       setTopDiaries(top);
     }
-  }, [diaries, groupDiaries]);
+  }, [diaries, groupDiaries, groupDiariesLoding]);
 
   if (diariesLoding && groupDiariesLoding && searchDiariesLoding) {
     return <div>로딩중...</div>;
@@ -157,7 +155,10 @@ export default function Main() {
             </>
           ) : cur.individual ? (
             <>
-              <PublicNote current={currentIndividual} />
+              <PublicNote
+                current={currentIndividual}
+                totalDiaries={individual}
+              />
               <Pagination
                 postsPerPage={postsPerPage}
                 totalPosts={individual?.length}
@@ -168,7 +169,7 @@ export default function Main() {
             </>
           ) : (
             <>
-              <PublicNote current={currentGroup} />
+              <PublicNote current={currentGroup} totalDiaries={group} />
               <Pagination
                 postsPerPage={postsPerPage}
                 totalPosts={group?.length}

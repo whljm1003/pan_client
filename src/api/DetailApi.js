@@ -3,7 +3,7 @@ import axios from "axios";
 
 const Token = sessionStorage.getItem("CC_Token");
 
-export function getDiary(id) {
+export function getDiaryApi(id) {
   if (Token) {
     return axios
       .get(`${API_URL}/diaries/${id}`, {
@@ -20,7 +20,7 @@ export function getDiary(id) {
       .then((res) => res.data.data[0]);
   }
 }
-export function deleteDiary(id) {
+export function deleteDiaryApi(id) {
   return axios.delete(`${API_URL}/diaries/${id}`, {
     headers: {
       Authorization: `Bearer ${Token}`,
@@ -29,8 +29,7 @@ export function deleteDiary(id) {
     withCredentials: true,
   });
 }
-
-export function postComments(id, comment) {
+export function postCommentsApi(id, comment) {
   return axios({
     method: "post",
     url: `${API_URL}/diaries/${id}/comments`,
@@ -44,8 +43,7 @@ export function postComments(id, comment) {
     withCredentials: true,
   });
 }
-
-export function deleteComments(id) {
+export function deleteCommentsApi(id) {
   return axios({
     method: "delete",
     url: `${API_URL}/comments/${id}`,
@@ -56,6 +54,25 @@ export function deleteComments(id) {
     withCredentials: true,
   });
 }
-
-// export function getGroupDiaries() {}
-// export function getSearch(keywords) {}
+export function likeApi(id) {
+  return axios({
+    method: "post",
+    url: `${API_URL}/diaries/${id}/trending`,
+    headers: {
+      Authorization: `Bearer ${Token}`,
+      ContentType: "application/json",
+    },
+    withCredentials: true,
+  });
+}
+export function publicApi(id) {
+  return axios({
+    method: "post",
+    url: `${API_URL}/diaries/${id}/private`,
+    headers: {
+      Authorization: `Bearer ${Token}`,
+      ContentType: "application/json",
+    },
+    withCredentials: true,
+  });
+}
