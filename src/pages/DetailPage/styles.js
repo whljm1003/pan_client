@@ -5,7 +5,6 @@ export const DetailsWrapper = styled.div`
   flex-direction: column;
   height: 102vh;
 `;
-
 export const DetailsMain = styled.div`
   display: flex;
   flex-direction: row;
@@ -14,7 +13,6 @@ export const DetailsMain = styled.div`
   width: 100%;
   margin: 0 auto;
 `;
-
 export const DetailContent = styled.div`
   width: 65%;
   height: 100%;
@@ -52,7 +50,6 @@ export const ContentHeader = styled.div`
   font-size: 20px;
   font-family: "MapoGoldenPier";
 `;
-
 export const ContentHeaderT = styled.div`
   width: 100%;
   height: 50px;
@@ -60,35 +57,30 @@ export const ContentHeaderT = styled.div`
   align-items: center;
   justify-content: center;
 `;
-
 export const ContentHTLeft = styled.div`
   width: 50%;
   height: 50px;
   display: flex;
   align-items: center;
 `;
-
 export const ContentTitle = styled.div`
   margin-top: 10px;
   margin-left: 20px;
   width: 80%;
   height: 30px;
 `;
-
 export const ContentHTRight = styled.div`
   width: 50%;
   height: 50px;
   display: flex;
   align-items: center;
 `;
-
 export const ContentDate = styled.div`
   margin-top: 10px;
   margin-left: 20px;
   width: 80%;
   height: 30px;
 `;
-
 export const ContentHeaderB = styled.div`
   /* border: 3px solid #E2CD6D; */
   width: 100%;
@@ -97,7 +89,6 @@ export const ContentHeaderB = styled.div`
   align-items: center;
   justify-content: space-between;
 `;
-
 export const ContentHBLeft = styled.div`
   padding-left: 80px;
   width: 50%;
@@ -105,13 +96,11 @@ export const ContentHBLeft = styled.div`
   display: flex;
   align-items: center;
 `;
-
 export const ContentFeel = styled.div`
   margin-left: 20px;
   width: 50px;
   height: 40px;
 `;
-
 export const ContentHBRight = styled.div`
   padding-left: 80px;
   width: 50%;
@@ -119,15 +108,12 @@ export const ContentHBRight = styled.div`
   display: flex;
   align-items: center;
 `;
-
 export const ContentWeather = styled.div`
   margin-left: 20px;
   width: 50px;
   height: 40px;
 `;
-
 export const ContentMain = styled.div`
-  /* border: 3px solid #83B799; */
   width: 100%;
   height: 80%;
   padding: 20px;
@@ -176,9 +162,7 @@ export const ContentMain = styled.div`
     font-weight: 700;
   }
 `;
-
 export const ContentBottom = styled.div`
-  /* border: 3px solid #C08A90; */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -187,18 +171,19 @@ export const ContentBottom = styled.div`
   padding: 10px;
   font-family: "GmarketSansBold";
 `;
-
 export const BottomLeft = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
 `;
-
 export const BottomWriter = styled.div`
   margin-left: 10px;
   font-family: "GmarketSansMedium";
+  span {
+    margin-left: 5px;
+    font-weight: 700;
+  }
 `;
-
 export const BottomLikeBtn = styled.div`
   margin-left: 30px;
   display: flex;
@@ -210,14 +195,12 @@ export const BottomLikeBtn = styled.div`
     margin-left: 10px;
   }
 `;
-
 export const BottomRight = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 20px;
 `;
-
 export const BottomPreBtn = styled.div`
   margin-left: 20px;
   width: 70px;
@@ -233,7 +216,6 @@ export const BottomPreBtn = styled.div`
   color: #fff9e9;
   cursor: pointer;
 `;
-
 export const BottomNextBtn = styled.div`
   margin-left: 20px;
   width: 70px;
@@ -264,7 +246,6 @@ export const PublicBtn = styled.div`
   color: #fff9e9;
   cursor: pointer;
 `;
-
 export const BottomEditBtn = styled.div`
   margin-left: 20px;
   width: 60px;
@@ -280,7 +261,6 @@ export const BottomEditBtn = styled.div`
   color: #fff9e9;
   cursor: pointer;
 `;
-
 export const BottomDeleteBtn = styled.div`
   margin-left: 20px;
   width: 60px;
@@ -296,7 +276,6 @@ export const BottomDeleteBtn = styled.div`
   color: #fff9e9;
   cursor: pointer;
 `;
-
 export const DetailComment = styled.div`
   width: 35%;
   height: 100%;
@@ -307,7 +286,6 @@ export const DetailComment = styled.div`
   position: relative;
   overflow-x: hidden;
 `;
-
 export const CommentHeader = styled.div`
   display: flex;
   align-items: center;
@@ -317,18 +295,15 @@ export const CommentHeader = styled.div`
   margin-top: 10px;
   padding-left: 10px;
 `;
-
 export const CommentLeft = styled.div`
   font-family: "GmarketSansBold";
   font-size: 15px;
 `;
-
 export const CommentMiddle = styled.div`
   margin-left: 10px;
   font-family: "GmarketSansMedium";
   font-size: 12px;
 `;
-
 export const CommentRight = styled.div`
   width: 70%;
   display: flex;
@@ -336,7 +311,6 @@ export const CommentRight = styled.div`
   font-family: "GmarketSansLight";
   font-size: 12px;
 `;
-
 export const CommentEditBtn = styled.div`
   width: 50px;
   display: flex;
@@ -350,7 +324,6 @@ export const CommentEditBtn = styled.div`
   color: #fff9e9;
   cursor: pointer;
 `;
-
 export const CommentDeleteBtn = styled.div`
   width: 50px;
   height: 30px;
@@ -364,7 +337,6 @@ export const CommentDeleteBtn = styled.div`
   color: #fff9e9;
   cursor: pointer;
 `;
-
 export const CommentMain = styled.div`
   width: 100%;
   height: 10%;
@@ -372,7 +344,6 @@ export const CommentMain = styled.div`
   font-family: "GmarketSansMedium";
   font-size: 18px;
 `;
-
 export const DetailBG = styled.div`
   height: 90%;
   overflow: scroll;
@@ -380,7 +351,6 @@ export const DetailBG = styled.div`
     display: none;
   }
 `;
-
 export const CommentBottom = styled.form`
   width: 100%;
   height: 5.5%;
@@ -392,7 +362,6 @@ export const CommentBottom = styled.form`
   position: absolute;
   bottom: 5px;
 `;
-
 export const CommentInput = styled.input`
   border: 3px solid black;
   width: 80%;
@@ -403,7 +372,6 @@ export const CommentInput = styled.input`
   left: 0px;
   background-color: white;
 `;
-
 export const CommnetBG = styled.div`
   border-bottom: 1px solid rgb(229, 229, 229);
 `;
@@ -425,7 +393,6 @@ export const CommentSubmitBtn = styled.div`
   right: 0px;
   cursor: pointer;
 `;
-
 export const DisableComment = styled.div`
   background-color: rgba(40, 42, 54, 0.8);
   border-radius: 0 20px 20px 0;

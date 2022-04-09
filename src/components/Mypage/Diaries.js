@@ -5,13 +5,15 @@ import styled from "styled-components";
 import checkIcons from "../../images/check.png";
 import Text from "../../images/text.png";
 import Drawing from "../../images/drawing.png";
+import { useSetRecoilState } from "recoil";
+import { DiariesAtom } from "atom";
 
 function Diaries({ diary }) {
   // pagenation state
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
-
+  const setDiaries = useSetRecoilState(DiariesAtom);
   // pagenation useEffect
   useEffect(() => {
     setPosts(diary);
@@ -32,6 +34,7 @@ function Diaries({ diary }) {
   // onClick하면 해당 일기의 id값을 추출해서 params로 전달하면서 페이지 이동
   const ToDetails = (id) => {
     navigate(`/details/${id}`);
+    setDiaries(diary);
   };
 
   return (

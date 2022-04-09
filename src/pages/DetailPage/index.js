@@ -58,6 +58,7 @@ import { DiariesAtom } from "atom";
 
 export default function Details() {
   const { id } = useParams();
+  const nummberId = parseInt(id);
   const [comment, setComment] = useState("");
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -68,7 +69,6 @@ export default function Details() {
   const [toPage, setToPage] = useState("");
   // recoil
   const diaries = useRecoilValue(DiariesAtom);
-  console.log(diaries);
   // react-query
   const {
     data: cur,
@@ -182,10 +182,9 @@ export default function Details() {
   };
   // 이전 일기로 이동
   const PreviousDiary = () => {
-    const nummberId = parseInt(id);
     if (diaries) {
       for (let i = 0; i < diaries.length; i++) {
-        if (nummberId === diaries[i].id) {
+        if (diaries[i] !== diaries[0] && nummberId === diaries[i].id) {
           navigate(`/details/${diaries[i - 1].id}`);
         }
       }
@@ -193,7 +192,6 @@ export default function Details() {
   };
   // 다음 일기로 이동
   const afterDiary = () => {
-    const nummberId = parseInt(id);
     if (diaries) {
       for (let i = 0; i < diaries.length; i++) {
         if (nummberId === diaries[i].id) {
@@ -204,11 +202,11 @@ export default function Details() {
   };
   // 이전,다음 버튼 클릭 시 데이터 랜더링
   useEffect(() => {
-    console.log("확인");
-    console.log(cur);
-    console.log(id);
+    // console.log(cur);
+    // console.log(diaries);
+    // console.log(id);
     curRefetch();
-  }, [id, cur]);
+  }, [id, cur, diaries]);
 
   if (userLoding && curLoading) {
     return <div>로딩중!!</div>;
@@ -264,13 +262,20 @@ export default function Details() {
             </ContentMain>
             <ContentBottom>
               <BottomLeft>
-                <BottomWriter>작성자: {cur?.username}</BottomWriter>
-
+                <BottomWriter>
+                  작성자:
+                  <span>{cur?.username}</span>
+                </BottomWriter>
                 {likeTag()}
               </BottomLeft>
               <BottomRight>
-                <BottomPreBtn onClick={PreviousDiary}>이전일기</BottomPreBtn>
-                <BottomNextBtn onClick={afterDiary}>다음일기</BottomNextBtn>
+                {nummberId !== diaries[0]?.id && (
+                  <BottomPreBtn onClick={PreviousDiary}>이전일기</BottomPreBtn>
+                )}
+                {nummberId !== diaries[diaries.length - 1]?.id && (
+                  <BottomNextBtn onClick={afterDiary}>다음일기</BottomNextBtn>
+                )}
+
                 {/*수정,삭제 버튼 */}
                 {cur?.userId === userInfo?.id && (
                   <>

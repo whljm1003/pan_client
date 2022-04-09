@@ -1,13 +1,17 @@
+import { DiariesAtom } from "atom";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 
 function Top10({ allDiaries }) {
   const [sortDiaries, setSortDiaries] = useState([]);
   const navigate = useNavigate();
+  const setDiaries = useSetRecoilState(DiariesAtom);
 
   const ToDetails = (id) => {
     navigate(`/details/${id}`);
+    setDiaries(sortDiaries);
   };
 
   useEffect(() => {
