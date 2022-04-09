@@ -55,6 +55,7 @@ import {
 import { getUserInfoApi } from "api/userApi";
 import { useRecoilValue } from "recoil";
 import { DiariesAtom } from "atom";
+import Loader from "components/Loader";
 
 export default function Details() {
   const { id } = useParams();
@@ -79,29 +80,23 @@ export default function Details() {
     "userInfo",
     getUserInfoApi
   );
-  const { mutate: commentsPost } = useMutation(
-    "commentsPost",
-    () => postCommentsApi(id, comment),
-    {
+  const { mutate: commentsPostMutate, isError: commentsPostisErr } =
+    useMutation("commentsPost", () => postCommentsApi(id, comment), {
       onSuccess: () => {
         queryClient.invalidateQueries("diary");
       },
-    }
-  );
-  const { mutate: commentsDelete } = useMutation(
-    "commentsDelete",
-    deleteCommentsApi,
-    {
+    });
+  const { mutate: commentsDeleteMutate, isError: commentsDeleteisErr } =
+    useMutation("commentsDelete", deleteCommentsApi, {
       onSuccess: () => {
         queryClient.invalidateQueries("diary");
       },
-    }
-  );
-  const { mutate: diariesDelete } = useMutation(
+    });
+  const { mutate: diaryDeleteMutate, isError: diaryDeleteisErr } = useMutation(
     "diariesDelete",
     deleteDiaryApi
   );
-  const { mutate: diariesLike } = useMutation(
+  const { mutate: likeMutate, isError: likeisErr } = useMutation(
     "diariesLike",
     () => likeApi(id),
     {
@@ -110,7 +105,7 @@ export default function Details() {
       },
     }
   );
-  const { mutate: publicMutate } = useMutation(
+  const { mutate: publicMutate, isError: publicisErr } = useMutation(
     "publicMutate",
     () => publicApi(id),
     {
@@ -129,7 +124,7 @@ export default function Details() {
   // 다이어리 삭제
   const deletedDiary = () => {
     modalHandler(true, "일기가 삭제되었습니다", "확인", "/");
-    diariesDelete(id);
+    diaryDeleteMutate(id);
   };
   // 다이어리 수정
   const FixedDiary = () => {
@@ -144,18 +139,18 @@ export default function Details() {
       setComment("");
       return modalHandler(true, "로그인 후 이용가능합니다", "확인");
     }
-    if (comment.length > 1) commentsPost();
+    if (comment.length > 1) commentsPostMutate();
     setComment("");
     modalHandler(true, "댓글이 등록 되었습니다", "확인");
   };
   // 댓글 삭제
   const deleteCommnet = (id) => {
-    commentsDelete(id);
+    commentsDeleteMutate(id);
     modalHandler(true, "댓글이 삭제 되었습니다", "확인");
   };
   // 좋아요 기능 구현
   const likeHandler = () => {
-    diariesLike();
+    likeMutate();
   };
   // 좋아요 태그
   const likeTag = () => {
@@ -208,8 +203,18 @@ export default function Details() {
     curRefetch();
   }, [id, cur, diaries]);
 
-  if (userLoding && curLoading) {
-    return <div>로딩중!!</div>;
+  if (
+    commentsPostisErr ||
+    commentsDeleteisErr ||
+    diaryDeleteisErr ||
+    likeisErr ||
+    publicisErr
+  ) {
+    console.log("에러");
+  }
+
+  if (userLoding || curLoading) {
+    return <Loader />;
   }
   return (
     <ModalProvider>
