@@ -17,16 +17,24 @@ import {
   PreviewCover,
   CoverImg,
 } from "./Style_ChooseBook";
-import bg01 from "images/Cover_img/01.png";
-import bg02 from "images/Cover_img/02.png";
-import bg03 from "images/Cover_img/03.png";
-import bg04 from "images/Cover_img/04.png";
-import bg05 from "images/Cover_img/05.png";
-import bg06 from "images/Cover_img/06.png";
-import bg07 from "images/Cover_img/07.png";
-import bg08 from "images/Cover_img/08.png";
 import bg09 from "images/Cover_img/09.png";
 import bg10 from "images/Cover_img/10.png";
+import bg13 from "images/Cover_img/13.png";
+import bg14 from "images/Cover_img/14.png";
+import bg16 from "images/Cover_img/16.png";
+import bg33 from "images/Cover_img/33.png";
+import bg36 from "images/Cover_img/36.png";
+import bg38 from "images/Cover_img/38.jpeg";
+import bg39 from "images/Cover_img/39.png";
+import bg40 from "images/Cover_img/40.png";
+import bg41 from "images/Cover_img/41.jpeg";
+import bg42 from "images/Cover_img/42.jpeg";
+import bg43 from "images/Cover_img/43.jpeg";
+import bg44 from "images/Cover_img/44.jpeg";
+import bg45 from "images/Cover_img/45.jpeg";
+import bg46 from "images/Cover_img/46.png";
+import bg47 from "images/Cover_img/47.jpeg";
+import bg48 from "images/Cover_img/48.jpeg";
 
 import { CreateBookContext } from "store/CreateBookStore";
 import { ModalProvider } from "styled-react-modal";
@@ -36,7 +44,26 @@ import styled from "styled-components";
 import { API_URL } from "url";
 
 export default function ChooseBook() {
-  const BG = [bg01, bg02, bg03, bg04, bg05, bg06, bg07, bg08, bg09, bg10];
+  const BG = [
+    bg09,
+    bg10,
+    bg13,
+    bg14,
+    bg16,
+    bg33,
+    bg36,
+    bg38,
+    bg39,
+    bg40,
+    bg41,
+    bg42,
+    bg43,
+    bg44,
+    bg45,
+    bg46,
+    bg47,
+    bg48,
+  ];
 
   // modal
   const [modalIsOpen, setModalIsOpen] = useState(true);
@@ -44,8 +71,8 @@ export default function ChooseBook() {
   // create 변수
   const [create, setCreate] = useState(false);
   const [books, setBooks] = useState([]);
-  const [bookName, setBookName] = useState("일기장 이름");
-  const [bookCover, setBookCover] = useState(bg01);
+  const [bookName, setBookName] = useState("");
+  const [bookCover, setBookCover] = useState(bg09);
   const [groupId, setGroupId] = useState("");
   // 초대 유저
   const [inviteUser, setInviteUser] = useState([]);

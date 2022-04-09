@@ -1,24 +1,19 @@
-import axios from "axios";
 import styled from "styled-components";
 import login_bg from "images/login_bg.jpg";
 import PageTitle from "components/PageTitle";
 import FormBox from "components/Login/FormBox";
 import BottomBox from "components/Login/BottomBox";
 import Separator from "components/Login/Separator";
-import kakao_button from "images/kakao_button.png";
 import AuthLayout from "components/Login/AuthLayout";
-import google_button from "images/google_button.png";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Input, Button, TextAlign, BlueGreen, CedarChest } from "./styles";
 import { postLogin } from "api/userApi";
 import { useMutation, useQueryClient } from "react-query";
-import { useRecoilState } from "recoil";
-import { token } from "atom";
+// import kakao_button from "images/kakao_button.png";
+// import google_button from "images/google_button.png";
 
 export default function Login() {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -34,7 +29,6 @@ export default function Login() {
       queryClient.invalidateQueries();
       queryClient.invalidateQueries("super-heroes");
       window.location.href = "http://localhost:3000";
-      // navigate("/");
     },
     onError: (error) => {
       alert("비밀번호가 일치하지 않습니다.");
@@ -81,12 +75,12 @@ export default function Login() {
           </form>
           <Separator />
           <ImageBox>
-            <SocialBtn>
+            {/* <SocialBtn>
               <img src={kakao_button} width="55%" alt="kakao" />
             </SocialBtn>
             <SocialBtn>
               <img src={google_button} width="55%" alt="google" />
-            </SocialBtn>
+            </SocialBtn> */}
           </ImageBox>
         </FormBox>
         <BottomBox cta="Don't You want to Log In?" linkText="Main" link="/" />
@@ -117,7 +111,6 @@ export const ImageBox = styled.div`
   align-items: center;
   margin: 0px 5px 5px 0px;
 `;
-
 export const SocialBtn = styled.div`
   margin: 0px 5px 0px 5px;
   cursor: pointer;

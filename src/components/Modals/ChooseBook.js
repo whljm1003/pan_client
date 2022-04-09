@@ -1,5 +1,4 @@
-import axios from "axios";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState } from "react";
 import { FiPlusCircle } from "react-icons/fi";
 import {
   StyledModal,
@@ -17,40 +16,79 @@ import {
   PreviewCover,
   CoverImg,
 } from "./Style_ChooseBook";
-import bg01 from "images/Cover_img/01.png";
-import bg02 from "images/Cover_img/02.png";
-import bg03 from "images/Cover_img/03.png";
-import bg04 from "images/Cover_img/04.png";
-import bg05 from "images/Cover_img/05.png";
-import bg06 from "images/Cover_img/06.png";
-import bg07 from "images/Cover_img/07.png";
-import bg08 from "images/Cover_img/08.png";
 import bg09 from "images/Cover_img/09.png";
 import bg10 from "images/Cover_img/10.png";
-import { API_URL } from "url";
-
-import { CreateBookContext } from "store/CreateBookStore";
+import bg13 from "images/Cover_img/13.png";
+import bg14 from "images/Cover_img/14.png";
+import bg16 from "images/Cover_img/16.png";
+import bg33 from "images/Cover_img/33.png";
+import bg36 from "images/Cover_img/36.png";
+import bg38 from "images/Cover_img/38.jpeg";
+import bg39 from "images/Cover_img/39.png";
+import bg40 from "images/Cover_img/40.png";
+import bg41 from "images/Cover_img/41.jpeg";
+import bg42 from "images/Cover_img/42.jpeg";
+import bg43 from "images/Cover_img/43.jpeg";
+import bg44 from "images/Cover_img/44.jpeg";
+import bg45 from "images/Cover_img/45.jpeg";
+import bg46 from "images/Cover_img/46.png";
+import bg47 from "images/Cover_img/47.jpeg";
+import bg48 from "images/Cover_img/48.jpeg";
+import { getBookApi, createBooksApi } from "api/DiaryAPi";
+import { useQuery, useMutation, useQueryClient } from "react-query";
+import { booksInfo } from "atom";
+import { useRecoilState } from "recoil";
 import { ModalProvider } from "styled-react-modal";
 import AlertModal from "./AlertModal";
-
+// import Loader from "components/Loader";
+const BG = [
+  bg09,
+  bg10,
+  bg13,
+  bg14,
+  bg16,
+  bg33,
+  bg36,
+  bg38,
+  bg39,
+  bg40,
+  bg41,
+  bg42,
+  bg43,
+  bg44,
+  bg45,
+  bg46,
+  bg47,
+  bg48,
+];
 export default function ChooseBook() {
-  const BG = [bg01, bg02, bg03, bg04, bg05, bg06, bg07, bg08, bg09, bg10];
-
   const [modalIsOpen, setModalIsOpen] = useState(true);
   const [create, setCreate] = useState(false);
-  const [books, setBooks] = useState([]);
-  const [bookName, setBookName] = useState("일기장 이름");
-  const [bookCover, setBookCover] = useState(bg01);
-  //context API
-  const context = useContext(CreateBookContext);
-  const { bookInfo, setBookInfo } = context;
-
+  const [bookName, setBookName] = useState("");
+  const [bookCover, setBookCover] = useState(bg09);
+  // react-query
+  const queryClient = useQueryClient();
+  const {
+    data,
+    isLoading: dataLoading,
+    error,
+  } = useQuery("bookData", getBookApi);
+  const {
+    mutate,
+    isLoading: mutateLoading,
+    isError,
+  } = useMutation(() => createBooksApi(bookName, bookCover), {
+    onSuccess: () => {
+      queryClient.invalidateQueries("bookData");
+    },
+  });
+  // recoil
+  const [bookInfo, setBookInfo] = useRecoilState(booksInfo);
   // modal state
   const [isModal, setIsModal] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
   const [btnContents, setBtnContents] = useState("");
   const [toPage, setToPage] = useState("");
-
   // 모달 핸들러
   const modalHandler = (isModal, alertMsg, btnContents, toPage) => {
     setIsModal(isModal);
@@ -58,24 +96,6 @@ export default function ChooseBook() {
     setBtnContents(btnContents);
     setToPage(toPage);
   };
-
-  // 서버랑 통신해서 현재 회원의 북 정보를 받아온다
-  useEffect(async () => {
-    try {
-      await axios
-        .get(`${API_URL}/myBook`, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
-            ContentType: "application/json",
-          },
-          withCredentials: true,
-        })
-        .then((res) => setBooks(res.data.data));
-    } catch {
-      console.error("err");
-    }
-  }, []);
-
   // 선택 버튼
   const selectBtn = () => {
     setBookInfo(bookInfo);
@@ -83,42 +103,33 @@ export default function ChooseBook() {
       ? setModalIsOpen(false)
       : modalHandler(true, "일기장을 선택해주세요", "확인");
   };
-
   // create에서 북을 선택하고 북 이름을 적으면 일기장이 생성되기 위한 메소드
-  const createBook = async () => {
-    sessionStorage.getItem("CC_Token")
-      ? await axios({
-          method: "post",
-          url: `${API_URL}/books`,
-          data: {
-            bookName,
-            bookCover,
-          },
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
-            ContentType: "application/json",
-          },
-          withCredentials: true,
-        }).then(
-          modalHandler(true, "일기장이 생성되었습니다", "확인"),
-          setCreate(false),
-          setTimeout(() => {
-            window.location.reload(true);
-          }, 100)
-        )
-      : modalHandler(true, "로그인 후 이용해주세요", "확인");
+  const createBookHandler = () => {
+    if (!bookName || !bookCover) {
+      return modalHandler(true, "이름과 커버를 선택해주세요", "확인");
+    }
+    if (sessionStorage.getItem("CC_Token")) {
+      mutate();
+      setCreate(false);
+      modalHandler(true, "일기장이 생성되었습니다", "확인");
+    } else {
+      modalHandler(true, "로그인 후 이용해주세요", "확인");
+    }
   };
-
   // 취소하면 리로드되서 다시 북 선택 모달창으로 이동
   const createCancelBtn = () => {
     setCreate(false);
   };
-
   // 취소 버튼을 누르면 모달창이 닫아짐 => 비회원한테 글쓰기 화면을 보여주기 위함
   const chooseCancelBtn = () => {
     setModalIsOpen(false);
   };
-
+  if (dataLoading || mutateLoading) {
+    // return <Loader />;
+  }
+  if (error || isError) {
+    console.log("에러");
+  }
   return (
     <ModalProvider>
       <AlertModal
@@ -145,7 +156,7 @@ export default function ChooseBook() {
                 일기장 생성하기
               </CreateBooks>
               <SelectBook>
-                {books.map((book) => {
+                {data?.map((book) => {
                   return book.id === bookInfo.id ? (
                     <div
                       key={book.id}
@@ -229,7 +240,7 @@ export default function ChooseBook() {
             <Footer>
               {/* 여기서 취소를 누르면 전페이지로 이동 */}
               <ModalButton onClick={createCancelBtn}>취소</ModalButton>
-              <ModalButton onClick={createBook}>생성</ModalButton>
+              <ModalButton onClick={createBookHandler}>생성</ModalButton>
             </Footer>
           </>
         )}

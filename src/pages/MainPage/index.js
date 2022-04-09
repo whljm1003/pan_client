@@ -4,7 +4,7 @@ import Top10 from "components/Main/Top10";
 import Pagination from "components/Pagination";
 import ToggleButton from "components/ToggleButton";
 import Header from "components/Header";
-import { getDiariesApi, getGroupDiariesApi, getSearchApi } from "api/MainAPi";
+import { getDiariesApi, getGroupDiariesApi, getSearchApi } from "api/DiaryAPi";
 import { useQuery } from "react-query";
 import {
   MainBody,
