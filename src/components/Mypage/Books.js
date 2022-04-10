@@ -13,7 +13,7 @@ function Books({ isCoverClick, books }) {
     <ModalProvider>
       <CoverMain>
         <CoverWrapper>
-          {books.map((book) => {
+          {books?.map((book) => {
             return (
               <Cover
                 key={book.id}

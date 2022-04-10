@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Header from "components/Header";
 import ToggleButton from "components/ToggleButton";
 import { AiOutlineHeart, AiTwotoneHeart } from "react-icons/ai";
@@ -71,11 +71,9 @@ export default function Details() {
   // recoil
   const diaries = useRecoilValue(DiariesAtom);
   // react-query
-  const {
-    data: cur,
-    isLoading: curLoading,
-    refetch: curRefetch,
-  } = useQuery("diary", () => getDiaryApi(id));
+  const { data: cur, isLoading: curLoading } = useQuery("diary", () =>
+    getDiaryApi(id)
+  );
   const { data: userInfo, isLoading: userLoding } = useQuery(
     "userInfo",
     getUserInfoApi
@@ -128,9 +126,9 @@ export default function Details() {
   };
   // 다이어리 수정
   const FixedDiary = () => {
-    // sessionStorage.setItem("temp", JSON.stringify(details));
-    // sessionStorage.setItem("id", JSON.stringify(id));
-    // !details.picUrl ? navigate("/writing") : navigate("/drawing");
+    sessionStorage.setItem("temp", JSON.stringify(cur));
+    sessionStorage.setItem("id", JSON.stringify(id));
+    !cur.picUrl ? navigate("/writing") : navigate("/drawing");
   };
   // 댓글 포스트
   const commentPost = (e) => {
@@ -195,14 +193,6 @@ export default function Details() {
       }
     }
   };
-  // 이전,다음 버튼 클릭 시 데이터 랜더링
-  useEffect(() => {
-    // console.log(cur);
-    // console.log(diaries);
-    // console.log(id);
-    console.log(userInfo);
-    curRefetch();
-  }, [id, cur, diaries, userInfo]);
 
   if (
     commentsPostisErr ||

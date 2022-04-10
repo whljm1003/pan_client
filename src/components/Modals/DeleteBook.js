@@ -80,7 +80,7 @@ function Deletebook(props) {
               <p>주세요</p>
             </MiddleTitle>
             <ModalBook>
-              {books.map((book) => {
+              {books?.map((book) => {
                 return (
                   <DiaryWrapper key={book.id}>
                     {book.id === bookId ? (

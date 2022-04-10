@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
 import ToggleButton from "components/ToggleButton";
 import Diaries from "components/Mypage/Diaries";
 import Header from "components/Header";
 import Books from "components/Mypage/Books";
 import mask from "images/mask.png";
 import UserInfo from "components/Mypage/Userinfo";
-// import { UserContext } from "store/UserStore";
 import {
   MypageWrapper,
   MypageMain,
@@ -20,7 +18,10 @@ import {
   DiarySection,
   MypageFooter,
 } from "./styles";
-import { API_URL } from "url";
+import { isError, useQuery } from "react-query";
+import { getUserInfoApi } from "api/userApi";
+import Loader from "components/Loader";
+import { getBookApi } from "api/DiaryAPi";
 
 export default function Mypage() {
   const [cur, setCur] = useState({
@@ -28,20 +29,26 @@ export default function Mypage() {
     group: false,
     edit: false,
   });
-
-  // const context = useContext(UserContext);
-  // const { username, email, profileUrl, accessTokenRequest } = context;
   const [individual, setIndividual] = useState([]);
   const [group, setGroup] = useState([]);
   const [lookBooks, SetLookBooks] = useState(false);
   const [diaries, setDiaries] = useState([]);
-
+  //react-query
+  const {
+    data: userInfoData,
+    isLoading: userInfoLoading,
+    isError: userInfoErr,
+  } = useQuery("userInfo", getUserInfoApi);
+  const {
+    data: bookInfoData,
+    isLoading: bookInfoLoading,
+    isError: bookInfoErr,
+  } = useQuery("bookInfo", getBookApi);
   // books=> cover onClick 하면 books안에있는 diary들이 diaries state에 저장이 된다.
   const isCoverClick = (e) => {
     SetLookBooks(true);
     setDiaries(e);
   };
-
   const changeIndividual = () => {
     setCur({ individual: true, group: false, edit: false });
     SetLookBooks(false);
@@ -54,29 +61,19 @@ export default function Mypage() {
     setCur({ individual: false, group: false, edit: true });
     SetLookBooks(false);
   };
-
-  // refreshTokenRequest()
-  // useEffect(accessTokenRequest, [accessTokenRequest]);
-
   useEffect(() => {
-    const fetchPosts = async () => {
-      await axios
-        .get(`${API_URL}/books`, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
-            ContentType: "application/json",
-          },
-          withCredentials: true,
-        })
-        .then((res) => {
-          const individualBooks = res.data.data.filter((e) => !e.groupId);
-          const groupBooks = res.data.data.filter((e) => e.groupId);
-          setIndividual(individualBooks);
-          setGroup(groupBooks);
-        });
-    };
-    fetchPosts();
-  }, []);
+    const individualBooks = bookInfoData?.filter((e) => !e.groupId);
+    const groupBooks = bookInfoData?.filter((e) => e.groupId);
+    setIndividual(individualBooks);
+    setGroup(groupBooks);
+  }, [bookInfoData]);
+
+  if (userInfoLoading || bookInfoLoading) {
+    <Loader />;
+  }
+  if (userInfoErr || bookInfoErr) {
+    console.log(isError.message);
+  }
 
   return (
     <>
@@ -85,12 +82,12 @@ export default function Mypage() {
         <MypageMain>
           <LeftSection>
             <ProfileWrapper>
-              {/* {!profileUrl ? (
+              {!userInfoData?.profileUrl ? (
                 <Profile src={mask} alt="이미지입니다" />
               ) : (
-                <Profile src={profileUrl} alt="이미지입니다" />
-              )} */}
-              {/* <Username>{username}</Username> */}
+                <Profile src={userInfoData.profileUrl} alt="이미지입니다" />
+              )}
+              <Username>{userInfoData?.username}</Username>
               <Username></Username>
             </ProfileWrapper>
             <PersonalDiary cur={cur.individual} onClick={changeIndividual}>
@@ -119,9 +116,9 @@ export default function Mypage() {
               )
             ) : (
               <UserInfo
-              // username={username}
-              // email={email}
-              // profileUrl={profileUrl}
+                username={userInfoData?.username}
+                email={userInfoData?.email}
+                profileUrl={userInfoData?.profileUrl}
               />
             )}
           </DiarySection>
