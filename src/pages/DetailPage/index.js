@@ -200,8 +200,9 @@ export default function Details() {
     // console.log(cur);
     // console.log(diaries);
     // console.log(id);
+    console.log(userInfo);
     curRefetch();
-  }, [id, cur, diaries]);
+  }, [id, cur, diaries, userInfo]);
 
   if (
     commentsPostisErr ||

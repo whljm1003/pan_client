@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Header from "components/Header";
@@ -7,12 +7,12 @@ import AlertModal from "components/Modals/AlertModal";
 import Feeling from "components/Post/Feeing";
 import Weather from "components/Post/Weather";
 import Darw from "components/Post/Draw";
-// import "codemirror/lib/codemirror.css";
 import "@toast-ui/editor/dist/toastui-editor.css";
-import { CreateBookContext } from "store/CreateBookStore";
 import { Editor } from "@toast-ui/react-editor";
 import { ModalProvider } from "styled-react-modal";
 import { API_URL } from "url";
+import { useRecoilValue } from "recoil";
+import { booksInfo } from "atom";
 import {
   DiaryWritingWrapper,
   DiaryWritingMain,
@@ -28,10 +28,7 @@ import {
 } from "./styles";
 
 export default function Writing() {
-  const context = useContext(CreateBookContext);
   const navigate = useNavigate();
-
-  const { bookInfo } = context;
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [feelings, setFeelings] = useState("");
@@ -40,7 +37,7 @@ export default function Writing() {
   const [picUrl, setPicUrl] = useState("");
   const [temp, setTemp] = useState("");
   const [diaryId, setDiaryId] = useState("");
-
+  const bookInfo = useRecoilValue(booksInfo);
   // modal state
   const [isModal, setIsModal] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
@@ -52,16 +49,18 @@ export default function Writing() {
   useEffect(() => {
     setTemp(JSON.parse(sessionStorage.getItem("temp")));
     setDiaryId(JSON.parse(sessionStorage.getItem("id")));
-
-    // diaryId !== null ? fixed() : editorRef.current.getInstance();
-    // .setHtml(
-    //   "<h5>그림 저장 버튼을 먼저 누르고 생성 버튼을 클릭 하셔야 그림 일기가 정상적으로 저장됩니다!</h5>"
-    // );
+    diaryId !== null
+      ? fixed()
+      : editorRef.current
+          .getInstance()
+          .setHTML(
+            "<h5>그림 저장 버튼을 먼저 누르고 생성 버튼을 클릭 하셔야 그림 일기가 정상적으로 저장됩니다!</h5>"
+          );
   }, [diaryId]);
 
   // 수정할 데이터 담기
   const fixed = () => {
-    editorRef.current.getInstance().setHtml(temp.content);
+    editorRef.current.getInstance().setHTML(temp.content);
     setPicUrl(temp.picUrl);
     setTitle(temp.title);
     setDate(temp.date);
@@ -131,7 +130,6 @@ export default function Writing() {
 
   const fixedBtn = async () => {
     sessionStorage.removeItem("temp");
-
     if (!title || !date || !feelings || !weather || !content) {
       modalHandler(true, "제목,기분,날짜,날씨,내용을 작성해주세요", "확인");
     } else {
@@ -170,10 +168,10 @@ export default function Writing() {
   };
 
   const getEditorContent = () => {
-    // const editorInstance = editorRef.current.getInstance();
-    // const getContent_md = editorInstance.getMarkdown();
-    // const GetContent_html = editorInstance.getHtml();
-    // setContent(GetContent_html);
+    const editorInstance = editorRef.current.getInstance();
+    const getContent_md = editorInstance.getMarkdown();
+    const GetContent_html = editorInstance.getHTML();
+    setContent(GetContent_html);
   };
 
   // 모달 핸들러

@@ -1,6 +1,8 @@
 import { API_URL } from "url";
 import axios from "axios";
 
+const Token = sessionStorage.getItem("CC_Token");
+
 export function postLogin(email, password) {
   return axios({
     method: "post",
@@ -17,15 +19,16 @@ export function postLogin(email, password) {
     }
   });
 }
-
 export function getUserInfoApi() {
-  return axios
-    .get(`${API_URL}/accessToken`, {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
-        ContentType: "application/json",
-      },
-      withCredentials: true,
-    })
-    .then((res) => res.data.data.userInfo);
+  if (Token) {
+    return axios
+      .get(`${API_URL}/accessToken`, {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+          ContentType: "application/json",
+        },
+        withCredentials: true,
+      })
+      .then((res) => res.data.data.userInfo);
+  }
 }

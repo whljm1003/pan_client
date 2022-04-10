@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "components/Header";
 import ToggleButton from "components/ToggleButton";
@@ -15,7 +15,6 @@ import {
   WriteButton,
   CancelButton,
 } from "./styles";
-import { CreateBookContext } from "store/CreateBookStore";
 import Feeling from "../../components/Post/Feeing";
 import Weather from "../../components/Post/Weather";
 import "@toast-ui/editor/dist/toastui-editor.css";
@@ -24,12 +23,15 @@ import axios from "axios";
 import { ModalProvider } from "styled-react-modal";
 import AlertModal from "../../components/Modals/AlertModal";
 import { API_URL } from "url";
+import { booksInfo } from "atom";
+import { useRecoilValue } from "recoil";
 
 export default function Writing() {
-  const createContext = useContext(CreateBookContext);
+  // const createContext = useContext(CreateBookContext);
   const navicate = useNavigate();
 
-  const { bookInfo } = createContext;
+  // const { bookInfo } = createContext;
+  const bookInfo = useRecoilValue(booksInfo);
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [feelings, setFeelings] = useState("");
@@ -51,21 +53,20 @@ export default function Writing() {
     setBtnContents(btnContents);
     setToPage(toPage);
   };
-
   useEffect(() => {
     setTemp(JSON.parse(sessionStorage.getItem("temp")));
     setDiaryId(JSON.parse(sessionStorage.getItem("id")));
 
-    // diaryId !== null
-    //   ? fixed()
-    //   : editorRef.current
-    //       .getInstance()
-    //       .setHtml("<h5>제목,기분,날짜,날씨,내용을 작성해주세요.</h5>");
+    diaryId !== null
+      ? fixed()
+      : editorRef.current
+          .getInstance()
+          .setHTML("<h5>제목,기분,날짜,날씨,내용을 작성해주세요.</h5>");
   }, [diaryId]);
 
   // 수정할 데이터 담기
   const fixed = () => {
-    editorRef.current.getInstance().setHtml(temp.content);
+    editorRef.current.getInstance().setHTML(temp.content);
     setTitle(temp.title);
     setDate(temp.date);
   };
@@ -107,7 +108,7 @@ export default function Writing() {
           date,
           feelings,
           weather,
-          content: "테스트중",
+          content,
         },
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
@@ -170,13 +171,15 @@ export default function Writing() {
 
   // 텍스트 에디터 툴 설정
   const getEditorContent = () => {
-    // const editorInstance = editorRef.current.getInstance();
+    const editorInstance = editorRef.current.getInstance();
     // const getContent_md = editorInstance.getMarkdown();
-    // const GetContent_html = editorInstance.getHtml();
-    // setContent(GetContent_html);
+    const GetContent_html = editorInstance.getHTML();
+    setContent(GetContent_html);
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    console.log(content);
+  }, [content]);
 
   return (
     <ModalProvider>

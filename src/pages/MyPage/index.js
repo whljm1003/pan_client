@@ -6,7 +6,7 @@ import Header from "components/Header";
 import Books from "components/Mypage/Books";
 import mask from "images/mask.png";
 import UserInfo from "components/Mypage/Userinfo";
-import { UserContext } from "store/UserStore";
+// import { UserContext } from "store/UserStore";
 import {
   MypageWrapper,
   MypageMain,
@@ -29,8 +29,8 @@ export default function Mypage() {
     edit: false,
   });
 
-  const context = useContext(UserContext);
-  const { username, email, profileUrl, accessTokenRequest } = context;
+  // const context = useContext(UserContext);
+  // const { username, email, profileUrl, accessTokenRequest } = context;
   const [individual, setIndividual] = useState([]);
   const [group, setGroup] = useState([]);
   const [lookBooks, SetLookBooks] = useState(false);
@@ -56,7 +56,7 @@ export default function Mypage() {
   };
 
   // refreshTokenRequest()
-  useEffect(accessTokenRequest, [accessTokenRequest]);
+  // useEffect(accessTokenRequest, [accessTokenRequest]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -85,12 +85,13 @@ export default function Mypage() {
         <MypageMain>
           <LeftSection>
             <ProfileWrapper>
-              {!profileUrl ? (
+              {/* {!profileUrl ? (
                 <Profile src={mask} alt="이미지입니다" />
               ) : (
                 <Profile src={profileUrl} alt="이미지입니다" />
-              )}
-              <Username>{username}</Username>
+              )} */}
+              {/* <Username>{username}</Username> */}
+              <Username></Username>
             </ProfileWrapper>
             <PersonalDiary cur={cur.individual} onClick={changeIndividual}>
               개인 일기
@@ -118,9 +119,9 @@ export default function Mypage() {
               )
             ) : (
               <UserInfo
-                username={username}
-                email={email}
-                profileUrl={profileUrl}
+              // username={username}
+              // email={email}
+              // profileUrl={profileUrl}
               />
             )}
           </DiarySection>

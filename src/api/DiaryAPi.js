@@ -40,3 +40,32 @@ export function createBooksApi(bookName, bookCover) {
     withCredentials: true,
   });
 }
+
+export function getGroupBookApi() {
+  return axios
+    .get(`${API_URL}/myGroupBook`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
+        ContentType: "application/json",
+      },
+      withCredentials: true,
+    })
+    .then((res) => res.data.data);
+}
+
+export function createGroupBooksApi(bookName, bookCover, groupId) {
+  return axios({
+    method: "post",
+    url: `${API_URL}/books`,
+    data: {
+      bookName,
+      bookCover,
+      groupId,
+    },
+    headers: {
+      Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
+      ContentType: "application/json",
+    },
+    withCredentials: true,
+  });
+}

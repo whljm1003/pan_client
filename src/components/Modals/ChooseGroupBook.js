@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { FiPlusCircle } from "react-icons/fi";
 import {
   StyledModal,
@@ -35,13 +35,15 @@ import bg45 from "images/Cover_img/45.jpeg";
 import bg46 from "images/Cover_img/46.png";
 import bg47 from "images/Cover_img/47.jpeg";
 import bg48 from "images/Cover_img/48.jpeg";
-
-import { CreateBookContext } from "store/CreateBookStore";
 import { ModalProvider } from "styled-react-modal";
 import AlertModal from "./AlertModal";
 import Modal from "styled-react-modal";
 import styled from "styled-components";
 import { API_URL } from "url";
+import { useRecoilState } from "recoil";
+import { booksInfo } from "atom";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { createGroupBooksApi, getGroupBookApi } from "api/DiaryAPi";
 
 export default function ChooseBook() {
   const BG = [
@@ -70,7 +72,6 @@ export default function ChooseBook() {
   const [inviteModalIsOpen, setInviteModalIsOpen] = useState(true);
   // create 변수
   const [create, setCreate] = useState(false);
-  const [books, setBooks] = useState([]);
   const [bookName, setBookName] = useState("");
   const [bookCover, setBookCover] = useState(bg09);
   const [groupId, setGroupId] = useState("");
@@ -78,15 +79,29 @@ export default function ChooseBook() {
   const [inviteUser, setInviteUser] = useState([]);
   const [inviteUser1, setInviteUser1] = useState("");
   const [inviteUser2, setInviteUser2] = useState("");
-  //context API
-  const context = useContext(CreateBookContext);
-  const { bookInfo, setBookInfo } = context;
+  // recoil
+  const [bookInfo, setBookInfo] = useRecoilState(booksInfo);
+  // react-query
+  const queryClient = useQueryClient();
+  const {
+    data,
+    isLoading: dataLoading,
+    error,
+  } = useQuery("getGroupBook", getGroupBookApi);
+  const {
+    mutate,
+    isLoading: mutateLoading,
+    isError,
+  } = useMutation(() => createGroupBooksApi(bookName, bookCover, groupId), {
+    onSuccess: () => {
+      queryClient.invalidateQueries("getGroupBook");
+    },
+  });
   // modal state
   const [isModal, setIsModal] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
   const [btnContents, setBtnContents] = useState("");
   const [toPage, setToPage] = useState("");
-
   // 모달 핸들러
   const modalHandler = (isModal, alertMsg, btnContents, toPage) => {
     setIsModal(isModal);
@@ -94,24 +109,6 @@ export default function ChooseBook() {
     setBtnContents(btnContents);
     setToPage(toPage);
   };
-
-  // 서버랑 통신해서 현재 회원의 북 정보를 받아온다
-  useEffect(async () => {
-    try {
-      await axios
-        .get(`${API_URL}/myGroupBook`, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
-            ContentType: "application/json",
-          },
-          withCredentials: true,
-        })
-        .then((res) => setBooks(res.data.data));
-    } catch {
-      console.error("err");
-    }
-  }, []);
-
   // 선택 버튼
   const selectBtn = () => {
     setBookInfo(bookInfo);
@@ -119,31 +116,21 @@ export default function ChooseBook() {
       ? setModalIsOpen(false)
       : modalHandler(true, "일기장을 선택해주세요", "확인");
   };
-
   // create에서 북을 선택하고 북 이름을 적으면 일기장이 생성되기 위한 메소드
-  const createBook = async () => {
-    sessionStorage.getItem("CC_Token")
-      ? await axios({
-          method: "post",
-          url: `${API_URL}/books`,
-          data: {
-            bookName,
-            bookCover,
-            groupId,
-          },
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
-            ContentType: "application/json",
-          },
-          withCredentials: true,
-        }).then(
-          modalHandler(true, "일기장이 생성되었습니다", "확인"),
-          setCreate(false),
-          setTimeout(() => {
-            window.location.reload(true);
-          }, 100)
-        )
-      : modalHandler(true, "로그인 후 이용해주세요", "확인");
+  const createBook = () => {
+    if (!groupId) {
+      return modalHandler(true, "그룹을 먼저 생성해주세요", "확인");
+    }
+    if (!bookName || !bookCover) {
+      return modalHandler(true, "이름과 커버를 선택해주세요", "확인");
+    }
+    if (sessionStorage.getItem("CC_Token")) {
+      mutate();
+      setCreate(false);
+      modalHandler(true, "일기장이 생성되었습니다", "확인");
+    } else {
+      modalHandler(true, "로그인 후 이용해주세요", "확인");
+    }
   };
 
   // 초대할 그룹 모달 핸들러
@@ -167,9 +154,6 @@ export default function ChooseBook() {
       })
       .catch(() => modalHandler(true, "이메일을 확인해주세요", "확인"));
   };
-
-  useEffect(() => {}, [groupId]);
-
   // 초대 그룹 모달 창 취소하기
   const inviteCancelBtn = () => {
     setInviteModalIsOpen(false);
@@ -184,16 +168,20 @@ export default function ChooseBook() {
     setInviteUser([inviteUser1, inviteUser2]);
     modalHandler(true, `이메일이 등록 되었습니다`, "확인");
   };
-
   // 취소하면 리로드되서 다시 북 선택 모달창으로 이동
   const createCancelBtn = () => {
     setCreate(false);
   };
-
   // 취소 버튼을 누르면 모달창이 닫아짐 => 비회원한테 글쓰기 화면을 보여주기 위함
   const chooseCancelBtn = () => {
     setModalIsOpen(false);
   };
+  if (dataLoading || mutateLoading) {
+    // return <Loader />;
+  }
+  if (error || isError) {
+    console.log("에러");
+  }
 
   return (
     <ModalProvider>
@@ -221,7 +209,7 @@ export default function ChooseBook() {
                 일기장 생성하기
               </CreateBooks>
               <SelectBook>
-                {books.map((book) => {
+                {data?.map((book) => {
                   return book.id === bookInfo.id ? (
                     <div
                       key={book.id}
@@ -356,7 +344,6 @@ export const InviteModal = Modal.styled`
     justify-content: center;
     background-color: white;
 `;
-
 export const GroupWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -376,13 +363,11 @@ export const GroupHeader = styled.div`
   font-size: xx-large;
   margin-bottom: 4%;
 `;
-
 export const SearchUser = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 3%;
 `;
-
 export const InviteUser = styled.input`
   border: 1px solid #242d40;
   border-radius: 12px;
@@ -407,11 +392,9 @@ export const CheckBtn = styled.button`
     border: 3px solid #505ac5;
   }
 `;
-
 export const InviteBottom = styled.div`
   display: flex;
 `;
-
 export const InviteBtn = styled.button`
   width: 90px;
   height: 40px;
