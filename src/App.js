@@ -1,19 +1,19 @@
-import React from "react";
-import { GlobalStyles } from "styles";
-import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import React from 'react';
+import { GlobalStyles } from 'styles';
+import { HelmetProvider } from 'react-helmet-async';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import Main from "pages/MainPage/index";
-import Myapge from "pages/MyPage/index";
-import Template from "pages/TemplatePage/Template";
-import TemplateGroup from "pages/TemplatePage/TemplateGroup";
-import Writing from "pages/PostPage/Writing";
-import Drawing from "pages/PostPage/Drawing";
-import Details from "pages/DetailPage/index";
-import Login from "pages/LoginPage/Login";
-import SignUp from "pages/LoginPage/SignUp";
+import Main from 'pages/MainPage/index';
+import Myapge from 'pages/MyPage/index';
+import Template from 'pages/TemplatePage/Template';
+import TemplateGroup from 'pages/TemplatePage/TemplateGroup';
+import Writing from 'pages/PostPage/Writing';
+import Drawing from 'pages/PostPage/Drawing';
+import Details from 'pages/DetailPage/index';
+import Login from 'pages/LoginPage/Login';
+import SignUp from 'pages/LoginPage/SignUp';
 //recoil
-import { RecoilRoot } from "recoil";
+import { RecoilRoot } from 'recoil';
 
 function App() {
   return (

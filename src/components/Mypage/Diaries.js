@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
-import Pagination from "../../components/Pagination";
-import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import checkIcons from "../../images/check.png";
-import Text from "../../images/text.png";
-import Drawing from "../../images/drawing.png";
-import { useSetRecoilState } from "recoil";
-import { DiariesAtom } from "atom";
+import React, { useState, useEffect } from 'react';
+import Pagination from '../../components/Pagination';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import Text from '../../images/text.png';
+import Drawing from '../../images/drawing.png';
+import { useSetRecoilState } from 'recoil';
+import { DiariesAtom } from 'atom';
 
 function Diaries({ diary }) {
   // pagenation state
@@ -17,12 +16,12 @@ function Diaries({ diary }) {
   // pagenation useEffect
   useEffect(() => {
     setPosts(diary);
-  });
+  }, [diary]);
 
   // Get current posts
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = posts?.slice(indexOfFirstPost, indexOfLastPost);
 
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -40,14 +39,12 @@ function Diaries({ diary }) {
   return (
     <Container>
       <DiaryHeader>
-        <img src={Text} width="40px" height="40px" alt="textnote" /> : Text
-        Diary
-        <img src={Drawing} width="40px" height="40px" alt="drawingnote" /> :
-        Drawing Diary
+        <img src={Text} width="40px" height="40px" alt="textnote" /> : Text Diary
+        <img src={Drawing} width="40px" height="40px" alt="drawingnote" /> : Drawing Diary
       </DiaryHeader>
       {/* 전체 페이지에서 한페이지당 10개만 나오게 설정 */}
       <DiaryBG>
-        {currentPosts.map((post) => (
+        {currentPosts?.map((post) => (
           <DiaryWrapper key={post.id}>
             <Diary onClick={() => ToDetails(post.id)}>
               <Ttitle>{post.title}</Ttitle>
@@ -57,20 +54,11 @@ function Diaries({ diary }) {
                 </ChooseTP>
               ) : (
                 <ChooseTP>
-                  <img
-                    src={Drawing}
-                    width="30px"
-                    height="30px"
-                    alt="drawingnote"
-                  />
+                  <img src={Drawing} width="30px" height="30px" alt="drawingnote" />
                 </ChooseTP>
               )}
               {/* 더미 데이터 말고 date 들어올때 날짜추출 메소드를 쓸것인지 slice를 쓸것인지 정해야됨 */}
-              {!post.date ? (
-                <Date>{post.date}</Date>
-              ) : (
-                <Date>{post.date.slice(0, 10)}</Date>
-              )}
+              {!post.date ? <Date>{post.date}</Date> : <Date>{post.date.slice(0, 10)}</Date>}
             </Diary>
           </DiaryWrapper>
         ))}
@@ -80,10 +68,10 @@ function Diaries({ diary }) {
           {/* pagination 을 불러오고 위에 상태들을 props로 전달 */}
           <Pagination
             postsPerPage={postsPerPage}
-            totalPosts={posts.length}
+            totalPosts={posts?.length}
             paginate={paginate}
             currentPage={currentPage}
-            color={["#83B799", "black"]}
+            color={['#83B799', 'black']}
           />
         </DiaryBottomCenter>
       </DiaryBottom>
@@ -115,13 +103,8 @@ const DiaryBG = styled.div`
   height: 80%;
   border-radius: 10px;
   padding-top: 5px;
-  background: linear-gradient(
-      to right,
-      rgba(20, 20, 20, 0.6) 70%,
-      rgba(20, 20, 20, 0.6) 70%,
-      rgba(20, 20, 20, 0.6)
-    ),
-    url("https://source.unsplash.com/user/erondu");
+  background: linear-gradient(to right, rgba(20, 20, 20, 0.6) 70%, rgba(20, 20, 20, 0.6) 70%, rgba(20, 20, 20, 0.6)),
+    url('https://source.unsplash.com/user/erondu');
   background-size: cover;
 `;
 
@@ -132,28 +115,8 @@ const DiaryWrapper = styled.div`
   width: 100%;
   height: 8%;
   margin-top: 10px;
-  font-family: "Cafe24SsurroundAir";
+  font-family: 'Cafe24SsurroundAir';
 `;
-
-const Public = styled.input`
-  display: inline-block;
-  width: 3%;
-  height: 50%;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid #e3dfd4;
-  border-radius: 50%;
-  cursor: pointer;
-  background-color: white;
-  margin-right: 5px;
-  :checked {
-    border: 1px solid rgb(0, 192, 168);
-    background-image: url(${checkIcons});
-    background-size: 110% 110%;
-    background-repeat: no-repeat;
-  }
-`;
-
 const Diary = styled.div`
   display: flex;
   align-items: center;
@@ -210,21 +173,6 @@ const DiaryBottom = styled.div`
   justify-content: center;
   width: 100%;
   height: 70px;
-`;
-
-const DiaryPublicButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 60%;
-  height: 70%;
-  background-color: #3d8dab;
-  border: 2px solid #3d8dab;
-  border-radius: 10px;
-  margin-left: 20px;
-  font-size: x-large;
-  color: white;
-  font-family: "Cafe24SsurroundAir";
 `;
 
 const DiaryBottomCenter = styled.div`

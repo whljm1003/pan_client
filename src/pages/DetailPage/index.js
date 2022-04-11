@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import Header from "components/Header";
-import ToggleButton from "components/ToggleButton";
-import { AiOutlineHeart, AiTwotoneHeart } from "react-icons/ai";
+import React, { useState } from 'react';
+import Header from 'components/Header';
+import ToggleButton from 'components/ToggleButton';
+import { AiOutlineHeart, AiTwotoneHeart } from 'react-icons/ai';
 import {
   CommentHeader,
   CommentMain,
@@ -39,79 +39,63 @@ import {
   ContentHBLeft,
   ContentHBRight,
   DisableComment,
-} from "./styles";
-import { useNavigate, useParams } from "react-router-dom";
-import { ModalProvider } from "styled-react-modal";
-import AlertModal from "../../components/Modals/AlertModal";
-import { useMutation, useQuery, useQueryClient } from "react-query";
-import {
-  getDiaryApi,
-  deleteDiaryApi,
-  postCommentsApi,
-  deleteCommentsApi,
-  likeApi,
-  publicApi,
-} from "api/DetailApi";
-import { getUserInfoApi } from "api/userApi";
-import { useRecoilValue } from "recoil";
-import { DiariesAtom } from "atom";
-import Loader from "components/Loader";
+} from './styles';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ModalProvider } from 'styled-react-modal';
+import AlertModal from '../../components/Modals/AlertModal';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { getDiaryApi, deleteDiaryApi, postCommentsApi, deleteCommentsApi, likeApi, publicApi } from 'api/DetailApi';
+import { getUserInfoApi } from 'api/userApi';
+import { useRecoilValue } from 'recoil';
+import { DiariesAtom } from 'atom';
+import Loader from 'components/Loader';
+import { useEffect } from 'react';
 
 export default function Details() {
   const { id } = useParams();
   const nummberId = parseInt(id);
-  const [comment, setComment] = useState("");
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [comment, setComment] = useState('');
   // modal state
   const [isModal, setIsModal] = useState(false);
-  const [alertMsg, setAlertMsg] = useState("");
-  const [btnContents, setBtnContents] = useState("");
-  const [toPage, setToPage] = useState("");
+  const [alertMsg, setAlertMsg] = useState('');
+  const [btnContents, setBtnContents] = useState('');
+  const [toPage, setToPage] = useState('');
   // recoil
   const diaries = useRecoilValue(DiariesAtom);
   // react-query
-  const { data: cur, isLoading: curLoading } = useQuery("diary", () =>
-    getDiaryApi(id)
-  );
-  const { data: userInfo, isLoading: userLoding } = useQuery(
-    "userInfo",
-    getUserInfoApi
-  );
-  const { mutate: commentsPostMutate, isError: commentsPostisErr } =
-    useMutation("commentsPost", () => postCommentsApi(id, comment), {
-      onSuccess: () => {
-        queryClient.invalidateQueries("diary");
-      },
-    });
-  const { mutate: commentsDeleteMutate, isError: commentsDeleteisErr } =
-    useMutation("commentsDelete", deleteCommentsApi, {
-      onSuccess: () => {
-        queryClient.invalidateQueries("diary");
-      },
-    });
-  const { mutate: diaryDeleteMutate, isError: diaryDeleteisErr } = useMutation(
-    "diariesDelete",
-    deleteDiaryApi
-  );
-  const { mutate: likeMutate, isError: likeisErr } = useMutation(
-    "diariesLike",
-    () => likeApi(id),
+  const { data: cur, isLoading: curLoading, refetch: curRefetch } = useQuery('diary', () => getDiaryApi(id), {});
+  const { data: userInfo, isLoading: userLoding } = useQuery('userInfo', getUserInfoApi);
+  const { mutate: commentsPostMutate, isError: commentsPostisErr } = useMutation(
+    'commentsPost',
+    () => postCommentsApi(id, comment),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries("diary");
+        queryClient.invalidateQueries('diary');
       },
     }
   );
-  const { mutate: publicMutate, isError: publicisErr } = useMutation(
-    "publicMutate",
-    () => publicApi(id),
+  const { mutate: commentsDeleteMutate, isError: commentsDeleteisErr } = useMutation(
+    'commentsDelete',
+    deleteCommentsApi,
     {
       onSuccess: () => {
-        queryClient.invalidateQueries("diary");
+        queryClient.invalidateQueries('diary');
       },
     }
   );
+  const { mutate: diaryDeleteMutate, isError: diaryDeleteisErr } = useMutation('diariesDelete', deleteDiaryApi);
+  const { mutate: likeMutate, isError: likeisErr } = useMutation('diariesLike', () => likeApi(id), {
+    onSuccess: () => {
+      queryClient.invalidateQueries('diary');
+    },
+  });
+  const { mutate: publicMutate, isError: publicisErr } = useMutation('publicMutate', () => publicApi(id), {
+    onSuccess: () => {
+      queryClient.invalidateQueries('diary');
+    },
+  });
   // 모달 핸들러
   const modalHandler = (isModal, alertMsg, btnContents, toPage) => {
     setIsModal(isModal);
@@ -121,34 +105,38 @@ export default function Details() {
   };
   // 다이어리 삭제
   const deletedDiary = () => {
-    modalHandler(true, "일기가 삭제되었습니다", "확인", "/");
+    modalHandler(true, '일기가 삭제되었습니다', '확인', '/');
     diaryDeleteMutate(id);
   };
   // 다이어리 수정
   const FixedDiary = () => {
-    sessionStorage.setItem("temp", JSON.stringify(cur));
-    sessionStorage.setItem("id", JSON.stringify(id));
-    !cur.picUrl ? navigate("/writing") : navigate("/drawing");
+    sessionStorage.setItem('temp', JSON.stringify(cur));
+    sessionStorage.setItem('id', JSON.stringify(id));
+    !cur.picUrl ? navigate('/writing') : navigate('/drawing');
   };
   // 댓글 포스트
   const commentPost = (e) => {
     e.preventDefault();
-    if (!sessionStorage.getItem("CC_Token")) {
-      setComment("");
-      return modalHandler(true, "로그인 후 이용가능합니다", "확인");
+    if (!sessionStorage.getItem('CC_Token')) {
+      setComment('');
+      return modalHandler(true, '로그인 후 이용가능합니다.', '확인');
     }
     if (comment.length > 1) commentsPostMutate();
-    setComment("");
-    modalHandler(true, "댓글이 등록 되었습니다", "확인");
+    setComment('');
+    modalHandler(true, '댓글이 등록 되었습니다.', '확인');
   };
   // 댓글 삭제
   const deleteCommnet = (id) => {
     commentsDeleteMutate(id);
-    modalHandler(true, "댓글이 삭제 되었습니다", "확인");
+    modalHandler(true, '댓글이 삭제 되었습니다.', '확인');
   };
   // 좋아요 기능 구현
   const likeHandler = () => {
-    likeMutate();
+    if (sessionStorage.getItem('CC_Token')) {
+      likeMutate();
+    } else {
+      modalHandler(true, '로그인 후 이용가능합니다.', '확인');
+    }
   };
   // 좋아요 태그
   const likeTag = () => {
@@ -178,7 +166,7 @@ export default function Details() {
     if (diaries) {
       for (let i = 0; i < diaries.length; i++) {
         if (diaries[i] !== diaries[0] && nummberId === diaries[i].id) {
-          navigate(`/details/${diaries[i - 1].id}`);
+          return navigate(`/details/${diaries[i - 1].id}`);
         }
       }
     }
@@ -188,20 +176,18 @@ export default function Details() {
     if (diaries) {
       for (let i = 0; i < diaries.length; i++) {
         if (nummberId === diaries[i].id) {
-          navigate(`/details/${diaries[i + 1].id}`);
+          return navigate(`/details/${diaries[i + 1].id}`);
         }
       }
     }
   };
 
-  if (
-    commentsPostisErr ||
-    commentsDeleteisErr ||
-    diaryDeleteisErr ||
-    likeisErr ||
-    publicisErr
-  ) {
-    console.log("에러");
+  useEffect(() => {
+    curRefetch();
+  }, [id, curRefetch]);
+
+  if (commentsPostisErr || commentsDeleteisErr || diaryDeleteisErr || likeisErr || publicisErr) {
+    console.log('에러발생');
   }
 
   if (userLoding || curLoading) {
@@ -235,7 +221,7 @@ export default function Details() {
                   <ContentFeel
                     style={{
                       backgroundImage: `url(${cur?.feelings})`,
-                      backgroundSize: "100% 100%",
+                      backgroundSize: '100% 100%',
                     }}
                   />
                 </ContentHBLeft>
@@ -244,7 +230,7 @@ export default function Details() {
                   <ContentWeather
                     style={{
                       backgroundImage: `url(${cur?.weather})`,
-                      backgroundSize: "100% 100%",
+                      backgroundSize: '100% 100%',
                     }}
                   />
                 </ContentHBRight>
@@ -265,10 +251,10 @@ export default function Details() {
                 {likeTag()}
               </BottomLeft>
               <BottomRight>
-                {nummberId !== diaries[0]?.id && (
+                {diaries.length > 1 && nummberId !== diaries[0]?.id && (
                   <BottomPreBtn onClick={PreviousDiary}>이전일기</BottomPreBtn>
                 )}
-                {nummberId !== diaries[diaries.length - 1]?.id && (
+                {diaries.length > 1 && nummberId !== diaries[diaries.length - 1]?.id && (
                   <BottomNextBtn onClick={afterDiary}>다음일기</BottomNextBtn>
                 )}
 
@@ -281,9 +267,7 @@ export default function Details() {
                       <PublicBtn onClick={handleSubmit}> 비 공 개 </PublicBtn>
                     )}
                     <BottomEditBtn onClick={FixedDiary}>수 정</BottomEditBtn>
-                    <BottomDeleteBtn onClick={deletedDiary}>
-                      삭 제
-                    </BottomDeleteBtn>
+                    <BottomDeleteBtn onClick={deletedDiary}>삭 제</BottomDeleteBtn>
                   </>
                 )}
               </BottomRight>
@@ -298,16 +282,10 @@ export default function Details() {
                     <CommnetBG key={comment.id}>
                       <CommentHeader>
                         <CommentLeft>{comment.User.username}</CommentLeft>
-                        <CommentMiddle>
-                          {comment.createdAt.slice(0, 10)}
-                        </CommentMiddle>
+                        <CommentMiddle>{comment.createdAt.slice(0, 10)}</CommentMiddle>
                         <CommentRight>
                           {comment.userId === userInfo?.id && (
-                            <CommentDeleteBtn
-                              onClick={() => deleteCommnet(comment.id)}
-                            >
-                              삭 제
-                            </CommentDeleteBtn>
+                            <CommentDeleteBtn onClick={() => deleteCommnet(comment.id)}>삭 제</CommentDeleteBtn>
                           )}
                         </CommentRight>
                       </CommentHeader>

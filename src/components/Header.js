@@ -1,15 +1,15 @@
-import styled from "styled-components";
-import SearchImg from "../images/loupe.png";
-import { Link, useNavigate } from "react-router-dom";
-import logo from "../images/logo.png";
-import React, { useState } from "react";
+import styled from 'styled-components';
+import SearchImg from '../images/loupe.png';
+import { Link, useNavigate } from 'react-router-dom';
+import logo from '../images/logo.png';
+import React from 'react';
 
 function Header({ keywords, SetKeywords, isMain, onClickSearch }) {
-  const token = sessionStorage.getItem("CC_Token");
+  const token = sessionStorage.getItem('CC_Token');
   const navigate = useNavigate();
   const handlelogout = () => {
-    sessionStorage.removeItem("CC_Token");
-    navigate("/");
+    sessionStorage.removeItem('CC_Token');
+    navigate('/');
     window.location.reload(true);
   };
   const searchKeywords = (e) => {
@@ -30,12 +30,7 @@ function Header({ keywords, SetKeywords, isMain, onClickSearch }) {
         <div>
           {isMain ? (
             <SearchForm onSubmit={onSubmitHandler}>
-              <SearchTxt
-                type="text"
-                placeholder="Type to search"
-                onChange={searchKeywords}
-                value={keywords}
-              />
+              <SearchTxt type="text" placeholder="Type to search" onChange={searchKeywords} value={keywords} />
 
               <SearchBtn href="#" onClick={onClickSearch}>
                 <img src={SearchImg} width="15px" alt="serach" />

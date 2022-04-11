@@ -13,7 +13,6 @@ export function postLogin(email, password) {
     },
     withCredentials: true,
   }).then((res) => {
-    console.log(res);
     if (res.data.data.accessToken) {
       let tokenData = res.data.data.accessToken;
       sessionStorage.setItem("CC_Token", tokenData);

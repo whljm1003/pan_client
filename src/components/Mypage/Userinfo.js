@@ -1,27 +1,26 @@
-import axios from "axios";
-import React, { useState } from "react";
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
-import { ModalProvider } from "styled-react-modal";
-import DeleteModal from "components/Modals/DeleteModal";
-import AlertModal from "components/Modals/AlertModal";
-import { API_URL } from "url";
-import mask from "../../images/mask.png";
+import axios from 'axios';
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { ModalProvider } from 'styled-react-modal';
+import DeleteModal from 'components/Modals/DeleteModal';
+import AlertModal from 'components/Modals/AlertModal';
+import { API_URL } from 'url';
+import mask from '../../images/mask.png';
 
 function EditUserInfo({ username, email }) {
   const navigate = useNavigate();
-  const [newName, setNewName] = useState("");
-  const [newProfile, setNewProfile] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
+  const [newName, setNewName] = useState('');
+  const [newProfile, setNewProfile] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   // modal state
   const [isModal, setIsModal] = useState(false);
   const [isConfirmModal, setIsConfirmModal] = useState(false);
-  const [alertMsg, setAlertMsg] = useState("");
-  const [target, setTarget] = useState("");
-  const [btnContents, setBtnContents] = useState("");
-  const [toPage, setToPage] = useState("");
+  const [alertMsg, setAlertMsg] = useState('');
+  const [target, setTarget] = useState('');
+  const [btnContents, setBtnContents] = useState('');
+  const [toPage, setToPage] = useState('');
 
   // alertModal handler
   const alertHandler = (isModal, alertMsg, btnContents, toPage) => {
@@ -38,7 +37,7 @@ function EditUserInfo({ username, email }) {
   };
 
   // 프로필 사진
-  const [imgBase64, setImgBase64] = useState(""); // 파일 base64
+  const [imgBase64, setImgBase64] = useState(''); // 파일 base64
   // const [imgFile, setImgFile] = useState(null);	//파일
 
   const handleChangeFile = (event) => {
@@ -58,12 +57,12 @@ function EditUserInfo({ username, email }) {
 
     // multer s3 통신해서 프로필 사진 변경
     const formData = new FormData();
-    formData.append("img", event.target.files[0]);
+    formData.append('img', event.target.files[0]);
     axios
       .put(`${API_URL}/profile/upload`, formData, {
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
-          "content-type": "multipart/form-data",
+          Authorization: `Bearer ${sessionStorage.getItem('CC_Token')}`,
+          'content-type': 'multipart/form-data',
         },
         withCredentials: true,
       })
@@ -73,20 +72,16 @@ function EditUserInfo({ username, email }) {
   // 회원정보 수정
   const UserInfoHandler = async () => {
     if (!newPassword || !newName) {
-      return alertHandler(
-        true,
-        "유저네임과 비밀번호는 필수 사항입니다",
-        "확인"
-      );
+      return alertHandler(true, '유저네임과 비밀번호는 필수 사항입니다', '확인');
     } else if (newPassword !== confirmPassword) {
-      return alertHandler(true, "비밀번호가 일치하지 않습니다", "확인");
+      return alertHandler(true, '비밀번호가 일치하지 않습니다', '확인');
     } else {
       await axios({
-        method: "put",
+        method: 'put',
         url: `${API_URL}/profile`,
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
-          ContentType: "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem('CC_Token')}`,
+          ContentType: 'application/json',
         },
         data: {
           username: newName,
@@ -95,8 +90,8 @@ function EditUserInfo({ username, email }) {
         },
         withCredentials: true,
       }).then(
-        sessionStorage.removeItem("CC_Token"),
-        alertHandler(true, "회원정보가 정상적으로 바꼈습니다", "확인", "/login")
+        sessionStorage.removeItem('CC_Token'),
+        alertHandler(true, '회원정보가 정상적으로 바꼈습니다', '확인', '/login')
       );
     }
   };
@@ -106,15 +101,15 @@ function EditUserInfo({ username, email }) {
     await axios
       .delete(`${API_URL}/withdrawal`, {
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
-          ContentType: "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem('CC_Token')}`,
+          ContentType: 'application/json',
         },
         withCredentials: true,
       })
       .then(() => {
-        alertHandler(true, "회원탈퇴가 되었습니다", "확인");
-        sessionStorage.removeItem("CC_Token");
-        navigate("/");
+        alertHandler(true, '회원탈퇴가 되었습니다', '확인');
+        sessionStorage.removeItem('CC_Token');
+        navigate('/');
       });
   };
 
@@ -142,13 +137,7 @@ function EditUserInfo({ username, email }) {
             <label htmlFor="imgFile" onChange={handleChangeFile}>
               사진 변경
             </label>
-            <input
-              type="file"
-              name="imgFile"
-              id="imgFile"
-              onChange={handleChangeFile}
-              style={{ display: "none" }}
-            />
+            <input type="file" name="imgFile" id="imgFile" onChange={handleChangeFile} style={{ display: 'none' }} />
           </ProfileLeft>
           <ProfileRight>
             <div>{username}</div>
@@ -193,13 +182,9 @@ function EditUserInfo({ username, email }) {
         <Withdrawal>
           <WithdrawalMain>
             <LeftDiv>회원탈퇴</LeftDiv>
-            <button onClick={() => deleteHandler(true, "탈퇴")}>
-              회원 탈퇴
-            </button>
+            <button onClick={() => deleteHandler(true, '탈퇴')}>회원 탈퇴</button>
           </WithdrawalMain>
-          <Bottom>
-            탈퇴 시 작성하신 일기장 및 일기들이 모두 삭제되며 복구되지 않습니다.
-          </Bottom>
+          <Bottom>탈퇴 시 작성하신 일기장 및 일기들이 모두 삭제되며 복구되지 않습니다.</Bottom>
         </Withdrawal>
         <EditFooter>
           <button onClick={UserInfoHandler}>수정하기</button>
@@ -253,7 +238,7 @@ const ProfileLeft = styled.div`
     border-radius: 9px;
     outline: none;
     border: none;
-    font-family: "Cafe24SsurroundAir";
+    font-family: 'Cafe24SsurroundAir';
     :hover {
       transform: scale(1.1);
     }
@@ -278,7 +263,7 @@ const ProfileRight = styled.div`
   }
   div:nth-child(1) {
     font-size: xx-large;
-    font-family: "Cafe24Ssurround";
+    font-family: 'Cafe24Ssurround';
     display: inline-block;
   }
 `;
@@ -359,7 +344,7 @@ const WithdrawalMain = styled.div`
     border-radius: 9px;
     outline: none;
     border: none;
-    font-family: "Cafe24SsurroundAir";
+    font-family: 'Cafe24SsurroundAir';
     opacity: 0.3;
     :hover {
       opacity: 1;
@@ -406,17 +391,9 @@ const EditFooter = styled.div`
     border-radius: 9px;
     outline: none;
     border: none;
-    font-family: "Cafe24SsurroundAir";
+    font-family: 'Cafe24SsurroundAir';
     :hover {
       transform: scale(1.1);
     }
   }
-`;
-
-const DiarySection = styled.section`
-  position: relative;
-  top: 3%;
-  left: 4.2%;
-  width: 66%;
-  height: 80%;
 `;

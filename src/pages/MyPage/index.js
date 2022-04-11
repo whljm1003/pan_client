@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import ToggleButton from "components/ToggleButton";
-import Diaries from "components/Mypage/Diaries";
-import Header from "components/Header";
-import Books from "components/Mypage/Books";
-import mask from "images/mask.png";
-import UserInfo from "components/Mypage/Userinfo";
+import React, { useState, useEffect } from 'react';
+import ToggleButton from 'components/ToggleButton';
+import Diaries from 'components/Mypage/Diaries';
+import Header from 'components/Header';
+import Books from 'components/Mypage/Books';
+import mask from 'images/mask.png';
+import UserInfo from 'components/Mypage/Userinfo';
 import {
   MypageWrapper,
   MypageMain,
@@ -17,11 +17,11 @@ import {
   Print,
   DiarySection,
   MypageFooter,
-} from "./styles";
-import { isError, useQuery } from "react-query";
-import { getUserInfoApi } from "api/userApi";
-import Loader from "components/Loader";
-import { getBookApi } from "api/DiaryAPi";
+} from './styles';
+import { useQuery } from 'react-query';
+import { getUserInfoApi } from 'api/userApi';
+import Loader from 'components/Loader';
+import { getMyBookApi } from 'api/DiaryAPi';
 
 export default function Mypage() {
   const [cur, setCur] = useState({
@@ -34,16 +34,8 @@ export default function Mypage() {
   const [lookBooks, SetLookBooks] = useState(false);
   const [diaries, setDiaries] = useState([]);
   //react-query
-  const {
-    data: userInfoData,
-    isLoading: userInfoLoading,
-    isError: userInfoErr,
-  } = useQuery("userInfo", getUserInfoApi);
-  const {
-    data: bookInfoData,
-    isLoading: bookInfoLoading,
-    isError: bookInfoErr,
-  } = useQuery("bookInfo", getBookApi);
+  const { data: userInfoData, isLoading: userInfoLoading, isError: userInfoErr } = useQuery('userInfo', getUserInfoApi);
+  const { data: bookInfoData, isLoading: bookInfoLoading, isError: bookInfoErr } = useQuery('bookInfo', getMyBookApi);
   // books=> cover onClick 하면 books안에있는 diary들이 diaries state에 저장이 된다.
   const isCoverClick = (e) => {
     SetLookBooks(true);
@@ -72,9 +64,8 @@ export default function Mypage() {
     <Loader />;
   }
   if (userInfoErr || bookInfoErr) {
-    console.log(isError.message);
+    console.log('에러발생');
   }
-
   return (
     <>
       <Header main="/" login="/login"></Header>
@@ -104,13 +95,13 @@ export default function Mypage() {
             {/* 개인일기, 교환일기 선택해서 나오게 해주는 것! 내용은 수정이 필요함 */}
             {cur.individual ? (
               lookBooks === false ? (
-                <Books isCoverClick={isCoverClick} books={individual}></Books>
+                <Books isCoverClick={isCoverClick} books={individual} />
               ) : (
                 <Diaries diary={diaries} />
               )
             ) : cur.group ? (
               lookBooks === false ? (
-                <Books isCoverClick={isCoverClick} books={group}></Books>
+                <Books isCoverClick={isCoverClick} books={group} />
               ) : (
                 <Diaries diary={diaries} />
               )

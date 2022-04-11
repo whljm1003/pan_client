@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { ModalProvider } from "styled-react-modal";
-import Deletebook from "components/Modals/DeleteBook";
-import styled from "styled-components";
+import React, { useState } from 'react';
+import { ModalProvider } from 'styled-react-modal';
+import Deletebook from 'components/Modals/DeleteBook';
+import styled from 'styled-components';
 
 function Books({ isCoverClick, books }) {
   const [modalIsOpen, setIsOpen] = useState(false);
@@ -19,7 +19,7 @@ function Books({ isCoverClick, books }) {
                 key={book.id}
                 style={{
                   backgroundImage: `url(${book.bookCover})`,
-                  backgroundSize: "100% 100%",
+                  backgroundSize: '100% 100%',
                 }}
                 onClick={() => isCoverClick(book.Diaries)}
               >
@@ -33,11 +33,7 @@ function Books({ isCoverClick, books }) {
             일기장 삭제
           </CoverDelete>
         </CoverHeader>
-        <Deletebook
-          modalIsOpen={modalIsOpen}
-          setIsOpen={setIsOpen}
-          books={books}
-        />
+        <Deletebook modalIsOpen={modalIsOpen} setIsOpen={setIsOpen} books={books} />
       </CoverMain>
     </ModalProvider>
   );
@@ -98,7 +94,7 @@ const Cover = styled.button`
   border: none;
   outline: none;
   cursor: pointer;
-  font-family: "Cafe24SsurroundAir";
+  font-family: 'Cafe24SsurroundAir';
   font-size: x-large;
   font-weight: bold;
   border-radius: 20px;
@@ -108,7 +104,7 @@ const Cover = styled.button`
   &:after {
     width: 100%;
     height: 100%;
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;

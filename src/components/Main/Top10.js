@@ -1,8 +1,8 @@
-import { DiariesAtom } from "atom";
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
-import styled from "styled-components";
+import { DiariesAtom } from 'atom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
+import styled from 'styled-components';
 
 function Top10({ allDiaries }) {
   const [sortDiaries, setSortDiaries] = useState([]);
@@ -43,7 +43,7 @@ function Top10({ allDiaries }) {
                 <CardContent>
                   <h2>{post.title}</h2>
                   <h3>{post.username}</h3>
-                  <h3>{post.date}</h3>
+                  <h3>{post.date.slice(0, 10)}</h3>
                 </CardContent>
               </Link>
             </CardWrap>
@@ -80,7 +80,7 @@ const HeadCard = styled.header`
 const HeaderText = styled.div`
   font-size: 40px;
   color: #bb2b2a;
-  font-family: "Cafe24Ssurround";
+  font-family: 'Cafe24Ssurround';
   font-weight: 900;
   animation: zoom 2s;
   @keyframes zoom {
@@ -135,7 +135,7 @@ const CardWrap = styled.article`
   &:after {
     width: 100%;
     height: 100%;
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -154,7 +154,6 @@ const CardWrap = styled.article`
     cursor: pointer;
   }
 `;
-
 const CardImg = styled.img`
   position: relative;
   width: 100%;
@@ -164,30 +163,13 @@ const CardImg = styled.img`
   opacity: 0.7;
   background-size: 100% 100%;
 `;
-
-const CardOverlay = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: #daedbd;
-  opacity: 0.5;
-  left: 0;
-  top: 0;
-  z-index: 0;
-  border: none;
-  border-radius: 20px;
-  &:hover {
-    opacity: 0.2;
-  }
-`;
-
 const CardContent = styled.article`
   position: absolute;
   left: 8px;
   bottom: 30px;
   display: flex;
   flex-direction: column;
-  font-family: "Cafe24SsurroundAir";
+  font-family: 'Cafe24SsurroundAir';
   padding: 10px;
   filter: brightness(1);
   opacity: 1;

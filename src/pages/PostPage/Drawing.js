@@ -1,18 +1,18 @@
-import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import Header from "components/Header";
-import ToggleButton from "components/ToggleButton";
-import AlertModal from "components/Modals/AlertModal";
-import Feeling from "components/Post/Feeing";
-import Weather from "components/Post/Weather";
-import Darw from "components/Post/Draw";
-import "@toast-ui/editor/dist/toastui-editor.css";
-import { Editor } from "@toast-ui/react-editor";
-import { ModalProvider } from "styled-react-modal";
-import { API_URL } from "url";
-import { useRecoilValue } from "recoil";
-import { booksInfo } from "atom";
+import React, { useEffect, useState, useRef } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import Header from 'components/Header';
+import ToggleButton from 'components/ToggleButton';
+import AlertModal from 'components/Modals/AlertModal';
+import Feeling from 'components/Post/Feeing';
+import Weather from 'components/Post/Weather';
+import Darw from 'components/Post/Draw';
+import '@toast-ui/editor/dist/toastui-editor.css';
+import { Editor } from '@toast-ui/react-editor';
+import { ModalProvider } from 'styled-react-modal';
+import { API_URL } from 'url';
+import { useRecoilValue } from 'recoil';
+import { booksInfo } from 'atom';
 import {
   DiaryWritingWrapper,
   DiaryWritingMain,
@@ -25,52 +25,31 @@ import {
   Footer,
   WriteButton,
   CancelButton,
-} from "./styles";
+} from './styles';
 
 export default function Writing() {
   const navigate = useNavigate();
-  const [title, setTitle] = useState("");
-  const [date, setDate] = useState("");
-  const [feelings, setFeelings] = useState("");
-  const [weather, setWeather] = useState("");
-  const [content, setContent] = useState("");
-  const [picUrl, setPicUrl] = useState("");
-  const [temp, setTemp] = useState("");
-  const [diaryId, setDiaryId] = useState("");
+  const [title, setTitle] = useState('');
+  const [date, setDate] = useState('');
+  const [feelings, setFeelings] = useState('');
+  const [weather, setWeather] = useState('');
+  const [content, setContent] = useState('');
+  const [picUrl, setPicUrl] = useState('');
+  const [temp, setTemp] = useState('');
+  const [diaryId, setDiaryId] = useState('');
   const bookInfo = useRecoilValue(booksInfo);
   // modal state
   const [isModal, setIsModal] = useState(false);
-  const [alertMsg, setAlertMsg] = useState("");
-  const [btnContents, setBtnContents] = useState("");
-  const [toPage, setToPage] = useState("");
+  const [alertMsg, setAlertMsg] = useState('');
+  const [btnContents, setBtnContents] = useState('');
+  const [toPage, setToPage] = useState('');
   // 에디터 툴 내용 추출
   const editorRef = useRef();
-
-  useEffect(() => {
-    setTemp(JSON.parse(sessionStorage.getItem("temp")));
-    setDiaryId(JSON.parse(sessionStorage.getItem("id")));
-    diaryId !== null
-      ? fixed()
-      : editorRef.current
-          .getInstance()
-          .setHTML(
-            "<h5>그림 저장 버튼을 먼저 누르고 생성 버튼을 클릭 하셔야 그림 일기가 정상적으로 저장됩니다!</h5>"
-          );
-  }, [diaryId]);
-
-  // 수정할 데이터 담기
-  const fixed = () => {
-    editorRef.current.getInstance().setHTML(temp.content);
-    setPicUrl(temp.picUrl);
-    setTitle(temp.title);
-    setDate(temp.date);
-  };
-
   // 제목에 입력한 값 상태에 담기 15자 넘어가면 짤리게 설정해서 최대15자까지 작성가능
   const titleHandler = (e) => {
     if (e.target.value.length > 15) {
       e.target.value = e.target.value.substr(0, 15);
-      modalHandler(true, "15자 이내로 작성해주세요", "확인");
+      modalHandler(true, '15자 이내로 작성해주세요', '확인');
     } else {
       setTitle(e.target.value);
     }
@@ -79,7 +58,7 @@ export default function Writing() {
   const dateHandler = (e) => {
     if (e.target.value.length > 10) {
       e.target.value = e.target.value.substr(0, 10);
-      modalHandler(true, "형식에 맞게 작성해주세요", "확인");
+      modalHandler(true, '형식에 맞게 작성해주세요', '확인');
     } else {
       setDate(e.target.value);
     }
@@ -90,19 +69,12 @@ export default function Writing() {
   // 3. 마지막으로 서버랑 통신해서 데이터 전송
   const writeBtn = async () => {
     if (!bookInfo) {
-      modalHandler(true, "일기장을 다시 선택하고 작성해주세요", "확인");
-    } else if (
-      !title ||
-      !date ||
-      !feelings ||
-      !weather ||
-      !content ||
-      !picUrl
-    ) {
-      modalHandler(true, "제목,기분,날짜,날씨,내용을 작성해주세요", "확인");
+      modalHandler(true, '일기장을 다시 선택하고 작성해주세요', '확인');
+    } else if (!title || !date || !feelings || !weather || !content || !picUrl) {
+      modalHandler(true, '제목,기분,날짜,날씨,내용을 작성해주세요', '확인');
     } else {
       await axios({
-        method: "post",
+        method: 'post',
         url: `${API_URL}/diaries`,
         data: {
           bookId: bookInfo.id,
@@ -114,27 +86,27 @@ export default function Writing() {
           picUrl,
         },
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
-          ContentType: "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem('CC_Token')}`,
+          ContentType: 'application/json',
         },
         withCredentials: true,
       })
         .then(() => {
-          modalHandler(true, "일기가 작성 되었습니다", "확인", "/mypage");
+          modalHandler(true, '일기가 작성 되었습니다', '확인', '/mypage');
         })
         .catch((err) => {
-          modalHandler(true, "일기 작성을 실패했습니다", "확인", "/");
+          modalHandler(true, '일기 작성을 실패했습니다', '확인', '/');
         });
     }
   };
 
   const fixedBtn = async () => {
-    sessionStorage.removeItem("temp");
+    sessionStorage.removeItem('temp');
     if (!title || !date || !feelings || !weather || !content) {
-      modalHandler(true, "제목,기분,날짜,날씨,내용을 작성해주세요", "확인");
+      modalHandler(true, '제목,기분,날짜,날씨,내용을 작성해주세요', '확인');
     } else {
       await axios({
-        method: "put",
+        method: 'put',
         url: `${API_URL}/diaries/${diaryId}`,
         data: {
           bookId: bookInfo.id,
@@ -145,31 +117,31 @@ export default function Writing() {
           content,
         },
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
-          ContentType: "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem('CC_Token')}`,
+          ContentType: 'application/json',
         },
         withCredentials: true,
       })
         .then(() => {
-          sessionStorage.removeItem("temp");
-          sessionStorage.removeItem("id");
-          modalHandler(true, "일기가 수정 되었습니다", "확인", "/mypage");
+          sessionStorage.removeItem('temp');
+          sessionStorage.removeItem('id');
+          modalHandler(true, '일기가 수정 되었습니다', '확인', '/mypage');
         })
         .catch((err) => {
-          modalHandler(true, "일기 수정이 실패되었습니다", "확인", "/");
+          modalHandler(true, '일기 수정이 실패되었습니다', '확인', '/');
         });
     }
   };
 
   const cancelBtn = () => {
-    navigate("/");
-    sessionStorage.removeItem("temp");
-    sessionStorage.removeItem("id");
+    navigate('/');
+    sessionStorage.removeItem('temp');
+    sessionStorage.removeItem('id');
   };
 
   const getEditorContent = () => {
     const editorInstance = editorRef.current.getInstance();
-    const getContent_md = editorInstance.getMarkdown();
+    // const getContent_md = editorInstance.getMarkdown();
     const GetContent_html = editorInstance.getHTML();
     setContent(GetContent_html);
   };
@@ -181,6 +153,21 @@ export default function Writing() {
     setBtnContents(btnContents);
     setToPage(toPage);
   };
+
+  useEffect(() => {
+    setTemp(JSON.parse(sessionStorage.getItem('temp')));
+    setDiaryId(JSON.parse(sessionStorage.getItem('id')));
+    if (diaryId !== null) {
+      editorRef.current.getInstance().setHTML(temp.content);
+      setPicUrl(temp.picUrl);
+      setTitle(temp.title);
+      setDate(temp.date);
+    } else {
+      editorRef.current
+        .getInstance()
+        .setHTML('<h5>그림 저장 버튼을 먼저 누르고 생성 버튼을 클릭 하셔야 그림 일기가 정상적으로 저장됩니다!</h5>');
+    }
+  }, [temp, diaryId]);
 
   return (
     <ModalProvider>
@@ -197,22 +184,11 @@ export default function Writing() {
           <WriteHeader>
             <WriteHeaderLeft>
               <WriteTitle>
-                제목:{" "}
-                <input
-                  type="text"
-                  placeholder="15자 이내로 작성해주세요"
-                  onChange={titleHandler}
-                  value={title || ""}
-                />
+                제목:{' '}
+                <input type="text" placeholder="15자 이내로 작성해주세요" onChange={titleHandler} value={title || ''} />
               </WriteTitle>
               <WriteDate>
-                날짜:{" "}
-                <input
-                  type="text"
-                  placeholder="예시) 2021-06-07"
-                  onChange={dateHandler}
-                  value={date || ""}
-                />
+                날짜: <input type="text" placeholder="예시) 2022-02-02" onChange={dateHandler} value={date || ''} />
               </WriteDate>
             </WriteHeaderLeft>
             <WriteHeaderRight>

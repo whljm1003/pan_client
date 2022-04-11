@@ -25,6 +25,17 @@ export function getBookApi() {
     })
     .then((res) => res.data.data);
 }
+export function getMyBookApi() {
+  return axios
+    .get(`${API_URL}/books`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
+        ContentType: "application/json",
+      },
+      withCredentials: true,
+    })
+    .then((res) => res.data.data);
+}
 export function createBooksApi(bookName, bookCover) {
   return axios({
     method: "post",

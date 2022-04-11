@@ -1,21 +1,21 @@
-import styled from "styled-components";
-import login_bg from "images/login_bg.jpg";
-import PageTitle from "components/PageTitle";
-import FormBox from "components/Login/FormBox";
-import BottomBox from "components/Login/BottomBox";
-import Separator from "components/Login/Separator";
-import AuthLayout from "components/Login/AuthLayout";
-import React, { useState } from "react";
-import { Input, Button, TextAlign, BlueGreen, CedarChest } from "./styles";
-import { postLogin } from "api/userApi";
-import { useMutation, useQueryClient } from "react-query";
+import styled from 'styled-components';
+import login_bg from 'images/login_bg.jpg';
+import PageTitle from 'components/PageTitle';
+import FormBox from 'components/Login/FormBox';
+import BottomBox from 'components/Login/BottomBox';
+import Separator from 'components/Login/Separator';
+import AuthLayout from 'components/Login/AuthLayout';
+import React, { useState } from 'react';
+import { Input, Button, TextAlign, BlueGreen, CedarChest } from './styles';
+import { postLogin } from 'api/userApi';
+import { useMutation, useQueryClient } from 'react-query';
 // import kakao_button from "images/kakao_button.png";
 // import google_button from "images/google_button.png";
 
 export default function Login() {
   const queryClient = useQueryClient();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const HandleEmail = (e) => {
     setEmail(e.target.value);
@@ -27,11 +27,12 @@ export default function Login() {
   const { mutate, isLoading } = useMutation(() => postLogin(email, password), {
     onSuccess: () => {
       queryClient.invalidateQueries();
-      queryClient.invalidateQueries("super-heroes");
-      window.location.href = "http://localhost:3000";
+      queryClient.invalidateQueries('super-heroes');
+      // window.location.href = "http://localhost:3000";
+      window.location.href = 'http://picanote.site';
     },
     onError: (error) => {
-      alert("비밀번호가 일치하지 않습니다.");
+      alert('비밀번호가 일치하지 않습니다.');
     },
   });
   const HandleSubmit = async (e) => {
@@ -54,24 +55,9 @@ export default function Login() {
             <CedarChest> ACCOUNT</CedarChest>
           </TextAlign>
           <form>
-            <Input
-              name="email"
-              type="text"
-              placeholder="EMAIL"
-              onChange={HandleEmail}
-            />
-            <Input
-              name="password"
-              type="password"
-              placeholder="PASSWORD"
-              onChange={HandlePassword}
-            />
-            <Button
-              type="submit"
-              value="LOG IN"
-              onClick={HandleSubmit}
-              style={{ marginBottom: "15px" }}
-            />
+            <Input name="email" type="text" placeholder="EMAIL" onChange={HandleEmail} />
+            <Input name="password" type="password" placeholder="PASSWORD" onChange={HandlePassword} />
+            <Button type="submit" value="LOG IN" onClick={HandleSubmit} style={{ marginBottom: '15px' }} />
           </form>
           <Separator />
           <ImageBox>
@@ -84,11 +70,7 @@ export default function Login() {
           </ImageBox>
         </FormBox>
         <BottomBox cta="Don't You want to Log In?" linkText="Main" link="/" />
-        <BottomBox
-          cta="Don't have an account?"
-          linkText="Sign Up"
-          link="/signUp"
-        />
+        <BottomBox cta="Don't have an account?" linkText="Sign Up" link="/signUp" />
       </AuthLayout>
     </Container>
   );

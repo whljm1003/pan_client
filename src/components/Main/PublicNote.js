@@ -1,8 +1,8 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import { useSetRecoilState } from "recoil";
-import { DiariesAtom } from "atom";
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import { useSetRecoilState } from 'recoil';
+import { DiariesAtom } from 'atom';
 
 function PublicNote({ current, totalDiaries }) {
   const navicate = useNavigate();
@@ -25,7 +25,7 @@ function PublicNote({ current, totalDiaries }) {
               <ItemContent>
                 <h3>{post.title}</h3>
                 <h4>{post.username}</h4>
-                <h4>{post.date}</h4>
+                <h4>{post.date.slice(0, 10)}</h4>
               </ItemContent>
             </Link>
           </ListItemBox>
@@ -49,7 +49,6 @@ const ListSection = styled.section`
   width: 100%;
   overflow: hidden;
 `;
-
 const ListItemBox = styled.div`
   width: 80%;
   height: 180px;
@@ -66,7 +65,7 @@ const ListItemBox = styled.div`
   ::after {
     width: 100%;
     height: 100%;
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -82,7 +81,6 @@ const ListItemBox = styled.div`
     cursor: pointer;
   }
 `;
-
 const ItemImg = styled.img`
   position: relative;
   width: 100%;
@@ -91,22 +89,6 @@ const ItemImg = styled.img`
   border-radius: 8px;
   opacity: 0.5;
 `;
-
-const ItemOverlay = styled.div`
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #868e96;
-  opacity: 0.3;
-  border: none;
-  border-radius: 8px;
-  &:hover {
-    opacity: 0;
-  }
-`;
-
 const ItemContent = styled.article`
   width: 100%;
   position: absolute;
@@ -114,7 +96,7 @@ const ItemContent = styled.article`
   bottom: 15px;
   display: flex;
   flex-direction: column;
-  font-family: "Cafe24SsurroundAir";
+  font-family: 'Cafe24SsurroundAir';
   color: #343a40;
   padding: 10px;
   filter: brightness(1);
