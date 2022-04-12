@@ -34,7 +34,7 @@ import bg45 from 'images/Cover_img/45.jpeg';
 import bg46 from 'images/Cover_img/46.png';
 import bg47 from 'images/Cover_img/47.jpeg';
 import bg48 from 'images/Cover_img/48.jpeg';
-import { getBookApi, createBooksApi } from 'api/DiaryAPi';
+import { getBook, createBook } from 'api/DiaryAPi';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { booksInfo } from 'atom';
 import { useRecoilState } from 'recoil';
@@ -49,8 +49,8 @@ export default function ChooseBook() {
   const [bookCover, setBookCover] = useState(bg09);
   // react-query
   const queryClient = useQueryClient();
-  const { data, error } = useQuery('bookData', getBookApi);
-  const { mutate, isError } = useMutation(() => createBooksApi(bookName, bookCover), {
+  const { data } = useQuery('bookData', getBook);
+  const { mutate } = useMutation(() => createBook(bookName, bookCover), {
     onSuccess: () => {
       queryClient.invalidateQueries('bookData');
     },
@@ -95,9 +95,6 @@ export default function ChooseBook() {
   const chooseCancelBtn = () => {
     setModalIsOpen(false);
   };
-  if (error || isError) {
-    console.log('에러발생');
-  }
   return (
     <ModalProvider>
       <AlertModal

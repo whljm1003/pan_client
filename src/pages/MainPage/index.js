@@ -1,21 +1,12 @@
-import React, { useState, useEffect } from "react";
-import PublicNote from "components/Main/PublicNote";
-import Top10 from "components/Main/Top10";
-import Pagination from "components/Pagination";
-import ToggleButton from "components/ToggleButton";
-import Header from "components/Header";
-import { getDiariesApi, getGroupDiariesApi, getSearchApi } from "api/DiaryAPi";
-import { useQuery } from "react-query";
-import {
-  MainBody,
-  PhraseGroup,
-  Phrase,
-  Div1,
-  Div2,
-  Div3,
-  MainFooter,
-  MainLabel,
-} from "./styles";
+import React, { useState, useEffect } from 'react';
+import PublicNote from 'components/Main/PublicNote';
+import Top10 from 'components/Main/Top10';
+import Pagination from 'components/Pagination';
+import ToggleButton from 'components/ToggleButton';
+import Header from 'components/Header';
+import { getDiaries, getGroupDiaries, getSearch } from 'api/DiaryAPi';
+import { useQuery } from 'react-query';
+import { MainBody, PhraseGroup, Phrase, Div1, Div2, Div3, MainFooter, MainLabel } from './styles';
 
 export default function Main() {
   // 개인, 그룹 구별
@@ -24,7 +15,7 @@ export default function Main() {
     group: false,
   });
   // search
-  const [keywords, SetKeywords] = useState("");
+  const [keywords, SetKeywords] = useState('');
   const [isMain] = useState(true);
   // pagination을 위한 states
   // I = 개인 , G = 그룹 , S = 검색
@@ -36,19 +27,13 @@ export default function Main() {
   const [currentPageS, setCurrentPageS] = useState(1);
   const [postsPerPage] = useState(10);
   // react-query
-  const { data: diaries, isLoading: diariesLoding } = useQuery(
-    "diaries",
-    getDiariesApi
-  );
-  const { data: groupDiaries, isLoading: groupDiariesLoding } = useQuery(
-    "group-diaries",
-    getGroupDiariesApi
-  );
+  const { data: diaries, isLoading: diariesLoding } = useQuery('diaries', getDiaries);
+  const { data: groupDiaries, isLoading: groupDiariesLoding } = useQuery('group-diaries', getGroupDiaries);
   const {
     data: searchDiaries,
     isLoading: searchDiariesLoding,
     refetch,
-  } = useQuery("search", () => getSearchApi(keywords), {
+  } = useQuery('search', () => getSearch(keywords), {
     enabled: false,
   });
   // Get current posts
@@ -59,10 +44,7 @@ export default function Main() {
   const indexOfFirstPostG = indexOfLastPostG - postsPerPage;
   const indexOfFirstPostS = indexOfLastPostG - postsPerPage;
   const currentIndividual = diaries?.slice(indexOfFirstPostI, indexOfLastPostI);
-  const currentSearchDiary = searchDiaries?.slice(
-    indexOfFirstPostS,
-    indexOfLastPostS
-  );
+  const currentSearchDiary = searchDiaries?.slice(indexOfFirstPostS, indexOfLastPostS);
   const currentGroup = groupDiaries?.slice(indexOfFirstPostG, indexOfLastPostG);
   // Change page
   const paginateI = (pageNumber) => setCurrentPageI(pageNumber);
@@ -73,7 +55,7 @@ export default function Main() {
     e.preventDefault();
     if (keywords) {
       refetch();
-      SetKeywords("");
+      SetKeywords('');
     }
   };
   // (resI:개인, resG:그룹) 렌더링 될 때  각 state에 담아줌
@@ -105,21 +87,18 @@ export default function Main() {
       ></Header>
       <MainBody>
         <PhraseGroup>
-          <Phrase style={{ animation: "fadein 1s", fontWeight: "bolder" }}>
-            순간의 기억을 정리하고
-          </Phrase>
+          <Phrase style={{ animation: 'fadein 1s', fontWeight: 'bolder' }}>순간의 기억을 정리하고</Phrase>
           <Phrase
             style={{
-              animation: "fadein 2s",
-              color: "#CCDEE2",
-              fontWeight: "bolder",
+              animation: 'fadein 2s',
+              color: '#CCDEE2',
+              fontWeight: 'bolder',
             }}
           >
             영원한 추억으로 기록하세요.
           </Phrase>
-          <Phrase style={{ color: "#75A5A9", fontWeight: "bolder" }}>
-            글과 그림으로 오늘을 표현하다.{" "}
-            <span style={{ color: "#3D8DAB" }}>Pic, a note</span>
+          <Phrase style={{ color: '#75A5A9', fontWeight: 'bolder' }}>
+            글과 그림으로 오늘을 표현하다. <span style={{ color: '#3D8DAB' }}>Pic, a note</span>
           </Phrase>
         </PhraseGroup>
         <Div1>
@@ -129,16 +108,10 @@ export default function Main() {
         <Div2>
           <Div3>
             {/* mainlabel을 maping해서 갯수에 맞게 pagenation 적용해야됨 */}
-            <MainLabel
-              choose={cur.individual}
-              onClick={() => setCur({ individual: true, group: false })}
-            >
+            <MainLabel choose={cur.individual} onClick={() => setCur({ individual: true, group: false })}>
               공유된 개인일기
             </MainLabel>
-            <MainLabel
-              choose={cur.group}
-              onClick={() => setCur({ individual: false, group: true })}
-            >
+            <MainLabel choose={cur.group} onClick={() => setCur({ individual: false, group: true })}>
               공유된 교환일기
             </MainLabel>
           </Div3>
@@ -150,21 +123,18 @@ export default function Main() {
                 totalPosts={searchDiaries.length}
                 paginate={paginateS}
                 currentPage={currentPageS}
-                color={["#343a40", "#C57951"]}
+                color={['#343a40', '#C57951']}
               />
             </>
           ) : cur.individual ? (
             <>
-              <PublicNote
-                current={currentIndividual}
-                totalDiaries={individual}
-              />
+              <PublicNote current={currentIndividual} totalDiaries={individual} />
               <Pagination
                 postsPerPage={postsPerPage}
                 totalPosts={individual?.length}
                 paginate={paginateI}
                 currentPage={currentPageI}
-                color={["#343a40", "#C57951"]}
+                color={['#343a40', '#C57951']}
               />
             </>
           ) : (
@@ -175,7 +145,7 @@ export default function Main() {
                 totalPosts={group?.length}
                 paginate={paginateG}
                 currentPage={currentPageG}
-                color={["#343a40", "#C57951"]}
+                color={['#343a40', '#C57951']}
               />
             </>
           )}

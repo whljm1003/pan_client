@@ -44,8 +44,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ModalProvider } from 'styled-react-modal';
 import AlertModal from '../../components/Modals/AlertModal';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { getDiaryApi, deleteDiaryApi, postCommentsApi, deleteCommentsApi, likeApi, publicApi } from 'api/DetailApi';
-import { getUserInfoApi } from 'api/userApi';
+import { getDiary, deleteDiary, postComments, deleteComments, isLike, isPublic } from 'api/DetailApi';
+import { getUserInfo } from 'api/userApi';
 import { useRecoilValue } from 'recoil';
 import { DiariesAtom } from 'atom';
 import Loader from 'components/Loader';
@@ -65,33 +65,25 @@ export default function Details() {
   // recoil
   const diaries = useRecoilValue(DiariesAtom);
   // react-query
-  const { data: cur, isLoading: curLoading, refetch: curRefetch } = useQuery('diary', () => getDiaryApi(id), {});
-  const { data: userInfo, isLoading: userLoding } = useQuery('userInfo', getUserInfoApi);
-  const { mutate: commentsPostMutate, isError: commentsPostisErr } = useMutation(
-    'commentsPost',
-    () => postCommentsApi(id, comment),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('diary');
-      },
-    }
-  );
-  const { mutate: commentsDeleteMutate, isError: commentsDeleteisErr } = useMutation(
-    'commentsDelete',
-    deleteCommentsApi,
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('diary');
-      },
-    }
-  );
-  const { mutate: diaryDeleteMutate, isError: diaryDeleteisErr } = useMutation('diariesDelete', deleteDiaryApi);
-  const { mutate: likeMutate, isError: likeisErr } = useMutation('diariesLike', () => likeApi(id), {
+  const { data: cur, isLoading: curLoading, refetch: curRefetch } = useQuery('diary', () => getDiary(id), {});
+  const { data: userInfo, isLoading: userLoding } = useQuery('userInfo', getUserInfo);
+  const { mutate: commentsPostMutate } = useMutation('commentsPost', () => postComments(id, comment), {
     onSuccess: () => {
       queryClient.invalidateQueries('diary');
     },
   });
-  const { mutate: publicMutate, isError: publicisErr } = useMutation('publicMutate', () => publicApi(id), {
+  const { mutate: commentsDeleteMutate } = useMutation('commentsDelete', deleteComments, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('diary');
+    },
+  });
+  const { mutate: diaryDeleteMutate } = useMutation('diariesDelete', deleteDiary);
+  const { mutate: likeMutate } = useMutation('diariesLike', () => isLike(id), {
+    onSuccess: () => {
+      queryClient.invalidateQueries('diary');
+    },
+  });
+  const { mutate: publicMutate } = useMutation('publicMutate', () => isPublic(id), {
     onSuccess: () => {
       queryClient.invalidateQueries('diary');
     },
@@ -185,10 +177,6 @@ export default function Details() {
   useEffect(() => {
     curRefetch();
   }, [id, curRefetch]);
-
-  if (commentsPostisErr || commentsDeleteisErr || diaryDeleteisErr || likeisErr || publicisErr) {
-    console.log('에러발생');
-  }
 
   if (userLoding || curLoading) {
     return <Loader />;

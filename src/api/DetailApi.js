@@ -1,41 +1,39 @@
-import { API_URL } from "url";
-import axios from "axios";
+import { API_URL } from 'url';
+import axios from 'axios';
 
-const Token = sessionStorage.getItem("CC_Token");
+const Token = sessionStorage.getItem('CC_Token');
 
-export function getDiaryApi(id) {
+export function getDiary(id) {
   if (Token) {
     return axios
       .get(`${API_URL}/diaries/${id}`, {
         headers: {
           Authorization: `Bearer ${Token}`,
-          ContentType: "application/json",
+          ContentType: 'application/json',
         },
         withCredentials: true,
       })
       .then((res) => res.data.data[0]);
   } else {
-    return axios
-      .get(`${API_URL}/diaries/${id}`)
-      .then((res) => res.data.data[0]);
+    return axios.get(`${API_URL}/diaries/${id}`).then((res) => res.data.data[0]);
   }
 }
-export function deleteDiaryApi(id) {
+export function deleteDiary(id) {
   return axios.delete(`${API_URL}/diaries/${id}`, {
     headers: {
       Authorization: `Bearer ${Token}`,
-      ContentType: "apllication/json",
+      ContentType: 'apllication/json',
     },
     withCredentials: true,
   });
 }
-export function postCommentsApi(id, comment) {
+export function postComments(id, comment) {
   return axios({
-    method: "post",
+    method: 'post',
     url: `${API_URL}/diaries/${id}/comments`,
     headers: {
       Authorization: `Bearer ${Token}`,
-      ContentType: "application/json",
+      ContentType: 'application/json',
     },
     data: {
       text: comment,
@@ -43,35 +41,35 @@ export function postCommentsApi(id, comment) {
     withCredentials: true,
   });
 }
-export function deleteCommentsApi(id) {
+export function deleteComments(id) {
   return axios({
-    method: "delete",
+    method: 'delete',
     url: `${API_URL}/comments/${id}`,
     headers: {
       Authorization: `Bearer ${Token}`,
-      ContentType: "application/json",
+      ContentType: 'application/json',
     },
     withCredentials: true,
   });
 }
-export function likeApi(id) {
+export function isLike(id) {
   return axios({
-    method: "post",
+    method: 'post',
     url: `${API_URL}/diaries/${id}/trending`,
     headers: {
       Authorization: `Bearer ${Token}`,
-      ContentType: "application/json",
+      ContentType: 'application/json',
     },
     withCredentials: true,
   });
 }
-export function publicApi(id) {
+export function isPublic(id) {
   return axios({
-    method: "post",
+    method: 'post',
     url: `${API_URL}/diaries/${id}/private`,
     headers: {
       Authorization: `Bearer ${Token}`,
-      ContentType: "application/json",
+      ContentType: 'application/json',
     },
     withCredentials: true,
   });

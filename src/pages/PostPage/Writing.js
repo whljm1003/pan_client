@@ -150,11 +150,9 @@ export default function Writing() {
     const GetContent_html = editorInstance.getHTML();
     setContent(GetContent_html);
   };
-
   useEffect(() => {
     setTemp(JSON.parse(sessionStorage.getItem('temp')));
     setDiaryId(JSON.parse(sessionStorage.getItem('id')));
-
     if (diaryId !== null) {
       editorRef.current.getInstance().setHTML(temp.content);
       setTitle(temp.title);
@@ -162,7 +160,7 @@ export default function Writing() {
     } else {
       editorRef.current.getInstance().setHTML('<h5>제목,기분,날짜,날씨,내용을 작성해주세요.</h5>');
     }
-  }, [temp, diaryId]);
+  }, []);
   return (
     <ModalProvider>
       <AlertModal

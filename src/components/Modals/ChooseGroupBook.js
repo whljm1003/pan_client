@@ -43,7 +43,7 @@ import { API_URL } from 'url';
 import { useRecoilState } from 'recoil';
 import { booksInfo } from 'atom';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { createGroupBooksApi, getGroupBookApi } from 'api/DiaryAPi';
+import { createGroupBook, getGroupBook } from 'api/DiaryAPi';
 
 export default function ChooseBook() {
   const BG = [
@@ -83,8 +83,8 @@ export default function ChooseBook() {
   const [bookInfo, setBookInfo] = useRecoilState(booksInfo);
   // react-query
   const queryClient = useQueryClient();
-  const { data, error } = useQuery('getGroupBook', getGroupBookApi);
-  const { mutate, isError } = useMutation(() => createGroupBooksApi(bookName, bookCover, groupId), {
+  const { data } = useQuery('getGroupBook', getGroupBook);
+  const { mutate } = useMutation(() => createGroupBook(bookName, bookCover, groupId), {
     onSuccess: () => {
       queryClient.invalidateQueries('getGroupBook');
     },
@@ -166,9 +166,6 @@ export default function ChooseBook() {
   const chooseCancelBtn = () => {
     setModalIsOpen(false);
   };
-  if (error || isError) {
-    console.log('에러발생');
-  }
 
   return (
     <ModalProvider>

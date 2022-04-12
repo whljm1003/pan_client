@@ -19,9 +19,9 @@ import {
   MypageFooter,
 } from './styles';
 import { useQuery } from 'react-query';
-import { getUserInfoApi } from 'api/userApi';
+import { getUserInfo } from 'api/userApi';
 import Loader from 'components/Loader';
-import { getMyBookApi } from 'api/DiaryAPi';
+import { getMyBook } from 'api/DiaryAPi';
 
 export default function Mypage() {
   const [cur, setCur] = useState({
@@ -34,8 +34,8 @@ export default function Mypage() {
   const [lookBooks, SetLookBooks] = useState(false);
   const [diaries, setDiaries] = useState([]);
   //react-query
-  const { data: userInfoData, isLoading: userInfoLoading, isError: userInfoErr } = useQuery('userInfo', getUserInfoApi);
-  const { data: bookInfoData, isLoading: bookInfoLoading, isError: bookInfoErr } = useQuery('bookInfo', getMyBookApi);
+  const { data: userInfoData, isLoading: userInfoLoading } = useQuery('userInfo', getUserInfo);
+  const { data: bookInfoData, isLoading: bookInfoLoading } = useQuery('bookInfo', getMyBook);
   // books=> cover onClick 하면 books안에있는 diary들이 diaries state에 저장이 된다.
   const isCoverClick = (e) => {
     SetLookBooks(true);
@@ -62,9 +62,6 @@ export default function Mypage() {
 
   if (userInfoLoading || bookInfoLoading) {
     <Loader />;
-  }
-  if (userInfoErr || bookInfoErr) {
-    console.log('에러발생');
   }
   return (
     <>
