@@ -80,3 +80,30 @@ export function createGroupBook(bookName, bookCover, groupId) {
     withCredentials: true,
   });
 }
+
+export function inviteGroup(inviteUser) {
+  return axios({
+    method: 'post',
+    url: `${API_URL}/user-group`,
+    data: {
+      email: inviteUser,
+    },
+    headers: {
+      Authorization: `Bearer ${sessionStorage.getItem('CC_Token')}`,
+      ContentType: 'application/json',
+    },
+    withCredentials: true,
+  }).then((res) => res.data.groupInfo.id);
+}
+
+export function deleteDiary(bookId) {
+  return axios({
+    method: 'delete',
+    url: `${API_URL}/books/${bookId}`,
+    headers: {
+      Authorization: `Bearer ${sessionStorage.getItem('CC_Token')}`,
+      ContentType: 'application/json',
+    },
+    withCredentials: true,
+  });
+}

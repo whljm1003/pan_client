@@ -160,7 +160,7 @@ export default function Writing() {
     } else {
       editorRef.current.getInstance().setHTML('<h5>제목,기분,날짜,날씨,내용을 작성해주세요.</h5>');
     }
-  }, []);
+  }, [diaryId]);
   return (
     <ModalProvider>
       <AlertModal

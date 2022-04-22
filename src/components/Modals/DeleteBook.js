@@ -1,25 +1,32 @@
-import axios from "axios";
-import React, { useState } from "react";
-import checkIcons from "images/check.png";
-import { ModalProvider } from "styled-react-modal";
-import DeleteModal from "./DeleteModal";
-import AlertModal from "./AlertModal";
-import Modal from "styled-react-modal";
-import styled from "styled-components";
-import { API_URL } from "url";
+import React, { useState } from 'react';
+import checkIcons from 'images/check.png';
+import { ModalProvider } from 'styled-react-modal';
+import DeleteModal from './DeleteModal';
+import AlertModal from './AlertModal';
+import Modal from 'styled-react-modal';
+import styled from 'styled-components';
+import { useQueryClient, useMutation } from 'react-query';
+import { deleteDiary } from 'api/DiaryAPi';
 
-function Deletebook(props) {
-  const { modalIsOpen, setIsOpen, books } = props;
-  const closeModal = () => {
-    setIsOpen(false);
-  };
+function Deletebook({ modalIsOpen, setIsOpen, books }) {
+  const queryClient = useQueryClient();
   const [bookId, setBookId] = useState();
   // modal state
   const [isModal, setIsModal] = useState(false);
   const [isConfirmModal, setIsConfirmModal] = useState(false);
-  const [alertMsg, setAlertMsg] = useState("");
-  const [target, setTarget] = useState("");
-  const [btnContents, setBtnContents] = useState("");
+  const [alertMsg, setAlertMsg] = useState('');
+  const [target, setTarget] = useState('');
+  const [btnContents, setBtnContents] = useState('');
+  const { mutate: deleteMutate } = useMutation(() => deleteDiary(bookId), {
+    onSuccess: () => {
+      alertHandler(true, '삭제가 완료되었습니다', '확인');
+      setIsOpen(false);
+      queryClient.invalidateQueries();
+      setTimeout(() => {
+        window.location.reload(true);
+      }, 500);
+    },
+  });
   // alertModal handler
   const alertHandler = (isModal, alertMsg, btnContents) => {
     setIsModal(isModal);
@@ -32,34 +39,13 @@ function Deletebook(props) {
     setIsConfirmModal(isConfirmModal);
     setTarget(target);
   };
-
   // 일기장 삭제
-  const HandleSubmit = async () => {
-    await axios({
-      method: "delete",
-      url: `${API_URL}/books/${bookId}`,
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem("CC_Token")}`,
-        ContentType: "application/json",
-      },
-      withCredentials: true,
-    }).then(() => {
-      alertHandler(true, "삭제가 완료되었습니다", "확인");
-      setIsOpen(false);
-      setTimeout(() => {
-        window.location.reload(true);
-      }, 500);
-    });
-  };
+  const HandleSubmit = () => deleteMutate();
+  const closeModal = () => setIsOpen(false);
 
   return (
     <ModalProvider>
-      <AlertModal
-        isModal={isModal}
-        setIsModal={setIsModal}
-        alertMsg={alertMsg}
-        btnContents={btnContents}
-      />
+      <AlertModal isModal={isModal} setIsModal={setIsModal} alertMsg={alertMsg} btnContents={btnContents} />
       <DeleteModal
         isModal={isConfirmModal}
         setIsModal={setIsConfirmModal}
@@ -90,11 +76,11 @@ function Deletebook(props) {
                           setBookId(book.id);
                         }}
                         style={{
-                          border: "3px solid white",
+                          border: '3px solid white',
                           backgroundImage: `url(${checkIcons})`,
-                          backgroundSize: "100% 100%",
-                          width: "13%",
-                          height: "6%",
+                          backgroundSize: '100% 100%',
+                          width: '13%',
+                          height: '6%',
                         }}
                       />
                     ) : (
@@ -109,7 +95,7 @@ function Deletebook(props) {
                       key={book.id}
                       style={{
                         backgroundImage: `url(${book.bookCover})`,
-                        backgroundSize: "100% 100%",
+                        backgroundSize: '100% 100%',
                       }}
                     >
                       <h2>{book.bookName}</h2>
@@ -121,11 +107,9 @@ function Deletebook(props) {
           </ModalMiddle>
           <ModalBottom>
             <Button
-              style={{ backgroundColor: "white", color: "tomato" }}
+              style={{ backgroundColor: 'white', color: 'tomato' }}
               onClick={() => {
-                return !bookId
-                  ? alertHandler(true, "삭제할 일기를 선택해주세요", "확인")
-                  : deleteHandler(true, "삭제");
+                return !bookId ? alertHandler(true, '삭제할 일기를 선택해주세요', '확인') : deleteHandler(true, '삭제');
               }}
             >
               DELETE
@@ -218,7 +202,7 @@ const DiaryWrapper = styled.div`
   justify-content: center;
   width: 100%;
   height: 100%;
-  font-family: "Cafe24SsurroundAir";
+  font-family: 'Cafe24SsurroundAir';
 `;
 
 const Public = styled.input`
@@ -239,7 +223,7 @@ const DeleteCover = styled.button`
   border: none;
   outline: none;
   cursor: pointer;
-  font-family: "Cafe24SsurroundAir";
+  font-family: 'Cafe24SsurroundAir';
   font-size: xx-large;
   font-weight: bold;
   color: #fff9e9;

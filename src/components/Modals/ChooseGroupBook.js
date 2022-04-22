@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useState } from 'react';
 import { FiPlusCircle } from 'react-icons/fi';
 import {
@@ -39,11 +38,10 @@ import { ModalProvider } from 'styled-react-modal';
 import AlertModal from './AlertModal';
 import Modal from 'styled-react-modal';
 import styled from 'styled-components';
-import { API_URL } from 'url';
 import { useRecoilState } from 'recoil';
 import { booksInfo } from 'atom';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { createGroupBook, getGroupBook } from 'api/DiaryAPi';
+import { createGroupBook, getGroupBook, inviteGroup } from 'api/DiaryAPi';
 
 export default function ChooseBook() {
   const BG = [
@@ -66,7 +64,7 @@ export default function ChooseBook() {
     bg47,
     bg48,
   ];
-
+  const emailRegExp = /^[\w-]+(\.[\w-]+)*@([a-z0-9-]+(\.[a-z0-9-]+)*?\.[a-z]{2,6}|(\d{1,3}\.){3}\d{1,3})(:\d{4})?$/;
   // modal
   const [modalIsOpen, setModalIsOpen] = useState(true);
   const [inviteModalIsOpen, setInviteModalIsOpen] = useState(true);
@@ -84,10 +82,16 @@ export default function ChooseBook() {
   // react-query
   const queryClient = useQueryClient();
   const { data } = useQuery('getGroupBook', getGroupBook);
-  const { mutate } = useMutation(() => createGroupBook(bookName, bookCover, groupId), {
-    onSuccess: () => {
-      queryClient.invalidateQueries('getGroupBook');
+  const { mutate: createMutate } = useMutation(() => createGroupBook(bookName, bookCover, groupId), {
+    onSuccess: () => queryClient.invalidateQueries('getGroupBook'),
+  });
+  const { mutate: inviteMutate } = useMutation(() => inviteGroup(inviteUser), {
+    onSuccess: (res) => {
+      setGroupId(res);
+      modalHandler(true, '그룹이 생성되었습니다.', '확인');
+      setInviteModalIsOpen(false);
     },
+    onError: (err) => modalHandler(true, '이메일을 확인해주세요', '확인'),
   });
   // modal state
   const [isModal, setIsModal] = useState(false);
@@ -115,57 +119,44 @@ export default function ChooseBook() {
       return modalHandler(true, '이름과 커버를 선택해주세요', '확인');
     }
     if (sessionStorage.getItem('CC_Token')) {
-      mutate();
+      createMutate();
       setCreate(false);
       modalHandler(true, '일기장이 생성되었습니다', '확인');
     } else {
       modalHandler(true, '로그인 후 이용해주세요', '확인');
     }
   };
-
   // 초대할 그룹 모달 핸들러
-  const inviteModalBtn = async () => {
-    await axios({
-      method: 'post',
-      url: `${API_URL}/user-group`,
-      data: {
-        email: inviteUser,
-      },
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem('CC_Token')}`,
-        ContentType: 'application/json',
-      },
-      withCredentials: true,
-    })
-      .then((res) => setGroupId(res.data.groupInfo.id))
-      .then(() => {
-        modalHandler(true, '그룹이 생성되었습니다.', '확인');
-        setInviteModalIsOpen(false);
-      })
-      .catch(() => modalHandler(true, '이메일을 확인해주세요', '확인'));
+  const inviteModalBtn = () => {
+    if (inviteUser.length < 1) {
+      return modalHandler(true, '이메일 작성 후 check 버튼을 눌러주세요', '확인');
+    }
+    inviteMutate();
   };
   // 초대 그룹 모달 창 취소하기
-  const inviteCancelBtn = () => {
-    setInviteModalIsOpen(false);
-  };
+  const inviteCancelBtn = () => setInviteModalIsOpen(false);
   // 1번째 유저를 확인합니다.
   const CheckUser1 = () => {
-    setInviteUser([inviteUser1]);
-    modalHandler(true, `이메일이 등록 되었습니다`, '확인');
+    if (!emailRegExp.test(inviteUser1)) {
+      modalHandler(true, '이메일을 형식에 맞게 작성해주세요.', '확인');
+    } else {
+      setInviteUser([inviteUser1]);
+      modalHandler(true, '이메일이 등록 되었습니다', '확인');
+    }
   };
   // 2번째 유저를 확인합니다.
   const CheckUser2 = () => {
-    setInviteUser([inviteUser1, inviteUser2]);
-    modalHandler(true, `이메일이 등록 되었습니다`, '확인');
+    if (!emailRegExp.test(inviteUser2)) {
+      modalHandler(true, '이메일을 형식에 맞게 작성해주세요.', '확인');
+    } else {
+      setInviteUser([...inviteUser].concat(inviteUser2));
+      modalHandler(true, '이메일이 등록 되었습니다', '확인');
+    }
   };
   // 취소하면 리로드되서 다시 북 선택 모달창으로 이동
-  const createCancelBtn = () => {
-    setCreate(false);
-  };
+  const createCancelBtn = () => setCreate(false);
   // 취소 버튼을 누르면 모달창이 닫아짐 => 비회원한테 글쓰기 화면을 보여주기 위함
-  const chooseCancelBtn = () => {
-    setModalIsOpen(false);
-  };
+  const chooseCancelBtn = () => setModalIsOpen(false);
 
   return (
     <ModalProvider>
@@ -249,7 +240,7 @@ export default function ChooseBook() {
                         setInviteUser1(e.target.value);
                       }}
                     />
-                    <CheckBtn onClick={CheckUser1}>Check</CheckBtn>
+                    <CheckBtn onClick={CheckUser1}>check</CheckBtn>
                   </SearchUser>
                   <SearchUser>
                     <InviteUser
@@ -259,7 +250,7 @@ export default function ChooseBook() {
                         setInviteUser2(e.target.value);
                       }}
                     />
-                    <CheckBtn onClick={CheckUser2}>Check</CheckBtn>
+                    <CheckBtn onClick={CheckUser2}>check</CheckBtn>
                   </SearchUser>
                   <InviteBottom>
                     <CancelBtn onClick={inviteCancelBtn}>취소</CancelBtn>
@@ -361,7 +352,6 @@ export const InviteUser = styled.input`
   font-size: large;
   color: black;
 `;
-
 export const CheckBtn = styled.button`
   width: 60px;
   height: 40px;
