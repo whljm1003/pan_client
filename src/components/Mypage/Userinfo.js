@@ -1,12 +1,12 @@
-import axios from 'axios';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { ModalProvider } from 'styled-react-modal';
 import DeleteModal from 'components/Modals/DeleteModal';
 import AlertModal from 'components/Modals/AlertModal';
-import { API_URL } from 'url';
 import mask from '../../images/mask.png';
+import { useMutation } from 'react-query';
+import { putUserInfo, userImg, accountWithdrawal } from 'api/userApi';
 
 function EditUserInfo({ username, email }) {
   const navigate = useNavigate();
@@ -14,6 +14,9 @@ function EditUserInfo({ username, email }) {
   const [newProfile, setNewProfile] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  // 프로필 사진
+  const [imgBase64, setImgBase64] = useState(''); // 파일 base64
+  // const [imgFile, setImgFile] = useState(null);	//파일
   // modal state
   const [isModal, setIsModal] = useState(false);
   const [isConfirmModal, setIsConfirmModal] = useState(false);
@@ -21,7 +24,18 @@ function EditUserInfo({ username, email }) {
   const [target, setTarget] = useState('');
   const [btnContents, setBtnContents] = useState('');
   const [toPage, setToPage] = useState('');
-
+  // react-query
+  const { mutate: userInfoMutate } = useMutation(() => putUserInfo(newName, newPassword, newProfile), {});
+  const { mutate: userImgMutate } = useMutation(userImg, {
+    onSuccess: (img) => setNewProfile(img),
+  });
+  const { mutate: withdrawalMutate } = useMutation(accountWithdrawal, {
+    onSuccess: () => {
+      alertHandler(true, '회원탈퇴가 되었습니다', '확인');
+      sessionStorage.removeItem('CC_Token');
+      navigate('/');
+    },
+  });
   // alertModal handler
   const alertHandler = (isModal, alertMsg, btnContents, toPage) => {
     setIsModal(isModal);
@@ -29,20 +43,13 @@ function EditUserInfo({ username, email }) {
     setAlertMsg(alertMsg);
     setToPage(toPage);
   };
-
   // deleteModal handler
   const deleteHandler = (isConfirmModal, target) => {
     setIsConfirmModal(isConfirmModal);
     setTarget(target);
   };
-
-  // 프로필 사진
-  const [imgBase64, setImgBase64] = useState(''); // 파일 base64
-  // const [imgFile, setImgFile] = useState(null);	//파일
-
   const handleChangeFile = (event) => {
     let reader = new FileReader();
-
     reader.onloadend = async () => {
       // 2. 읽기가 완료되면 아래코드가 실행됩니다.
       const base64 = reader.result;
@@ -54,21 +61,11 @@ function EditUserInfo({ username, email }) {
       reader.readAsDataURL(event.target.files[0]); // 1. 파일을 읽어 버퍼에 저장합니다.
       // setImgFile(event.target.files[0]); // 파일 상태 업데이트
     }
-
     // multer s3 통신해서 프로필 사진 변경
     const formData = new FormData();
     formData.append('img', event.target.files[0]);
-    axios
-      .put(`${API_URL}/profile/upload`, formData, {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem('CC_Token')}`,
-          'content-type': 'multipart/form-data',
-        },
-        withCredentials: true,
-      })
-      .then((res) => setNewProfile(res.data.profileUrl));
+    userImgMutate(formData);
   };
-
   // 회원정보 수정
   const UserInfoHandler = async () => {
     if (!newPassword || !newName) {
@@ -76,42 +73,12 @@ function EditUserInfo({ username, email }) {
     } else if (newPassword !== confirmPassword) {
       return alertHandler(true, '비밀번호가 일치하지 않습니다', '확인');
     } else {
-      await axios({
-        method: 'put',
-        url: `${API_URL}/profile`,
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem('CC_Token')}`,
-          ContentType: 'application/json',
-        },
-        data: {
-          username: newName,
-          password: newPassword,
-          profileUrl: newProfile,
-        },
-        withCredentials: true,
-      }).then(
-        sessionStorage.removeItem('CC_Token'),
-        alertHandler(true, '회원정보가 정상적으로 바꼈습니다', '확인', '/login')
-      );
+      userInfoMutate();
+      alertHandler(true, '회원정보가 정상적으로 바꼈습니다', '확인', '/login');
     }
   };
-
   // 회원탈퇴
-  const WithdrawalHandler = async () => {
-    await axios
-      .delete(`${API_URL}/withdrawal`, {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem('CC_Token')}`,
-          ContentType: 'application/json',
-        },
-        withCredentials: true,
-      })
-      .then(() => {
-        alertHandler(true, '회원탈퇴가 되었습니다', '확인');
-        sessionStorage.removeItem('CC_Token');
-        navigate('/');
-      });
-  };
+  const WithdrawalHandler = () => withdrawalMutate();
 
   return (
     <ModalProvider>

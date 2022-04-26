@@ -28,8 +28,8 @@ export default function Login() {
     onSuccess: () => {
       queryClient.invalidateQueries();
       queryClient.invalidateQueries('super-heroes');
-      // window.location.href = "http://localhost:3000";
-      window.location.href = 'http://picanote.site';
+      window.location.href = 'http://localhost:3000';
+      // window.location.href = 'http://picanote.site';
     },
     onError: (error) => {
       alert('비밀번호가 일치하지 않습니다.');

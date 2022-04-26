@@ -1,12 +1,14 @@
 import { API_URL } from 'url';
 import axios from 'axios';
-
+// 공개된 개인 일기장 정보
 export function getDiaries() {
   return axios.get(`${API_URL}/diaries`).then((res) => res.data.data);
 }
+// 공개된 그룹 일기장 정보
 export function getGroupDiaries() {
   return axios.get(`${API_URL}/group-diaries`).then((res) => res.data.data);
 }
+// 공개된 일기장 검색
 export function getSearch(keywords) {
   return axios({
     method: 'get',
@@ -14,6 +16,7 @@ export function getSearch(keywords) {
     withCredentials: true,
   }).then((res) => res.data.data);
 }
+// 일기장 커버 조회
 export function getBook() {
   return axios
     .get(`${API_URL}/myBook`, {
@@ -25,6 +28,7 @@ export function getBook() {
     })
     .then((res) => res.data.data);
 }
+// 내 일기장 조회
 export function getMyBook() {
   return axios
     .get(`${API_URL}/books`, {
@@ -36,6 +40,7 @@ export function getMyBook() {
     })
     .then((res) => res.data.data);
 }
+// 개인 일기장 생성
 export function createBook(bookName, bookCover) {
   return axios({
     method: 'post',
@@ -51,7 +56,7 @@ export function createBook(bookName, bookCover) {
     withCredentials: true,
   });
 }
-
+// 그룹 일기장 생성
 export function getGroupBook() {
   return axios
     .get(`${API_URL}/myGroupBook`, {
@@ -63,7 +68,7 @@ export function getGroupBook() {
     })
     .then((res) => res.data.data);
 }
-
+// 그룹 일기장 생성
 export function createGroupBook(bookName, bookCover, groupId) {
   return axios({
     method: 'post',
@@ -80,7 +85,7 @@ export function createGroupBook(bookName, bookCover, groupId) {
     withCredentials: true,
   });
 }
-
+// 그룹 유저 초대
 export function inviteGroup(inviteUser) {
   return axios({
     method: 'post',
@@ -95,7 +100,7 @@ export function inviteGroup(inviteUser) {
     withCredentials: true,
   }).then((res) => res.data.groupInfo.id);
 }
-
+// 일기장 삭제
 export function deleteDiary(bookId) {
   return axios({
     method: 'delete',
