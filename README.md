@@ -10,8 +10,6 @@
 
 # 🔗&nbsp; 주요 링크
 
-- `배포` > <a href="https://www.picanote.site">https://www.picanote.site</a>
-
 - `Client` > <a href="https://github.com/whljm1003/pan_client">https://github.com/whljm1003/pan_client</a>
 
 - `Server`> <a href="https://github.com/whljm1003/pan_server">https://github.com/whljm1003/pan_server</a>
